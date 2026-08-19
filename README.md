@@ -31,8 +31,8 @@ winget install cristianobleve.lyra
 ### Build from Source
 Ensure you have the latest Rust toolchain installed:
 ```bash
-git clone https://github.com/cristianobleve/spotialt.git
-cd spotialt
+git clone https://github.com/cristianobleve/lyra.git
+cd lyra
 cargo run --release
 ```
 
