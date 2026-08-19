@@ -1,0 +1,37 @@
+[workspace]
+members = [
+    "crates/spotialt-core",
+    "crates/spotialt-api",
+    "crates/spotialt-ui",
+    "crates/spotialt-app",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["Spotialt Contributors"]
+license = "MIT OR Apache-2.0"
+
+[workspace.dependencies]
+tokio = { version = "1.40", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls", "stream"] }
+slint = { version = "1.9", default-features = false, features = ["backend-winit", "renderer-femtovg", "compat-1-2"] }
+slint-build = "1.9"
+log = "0.4"
+env_logger = "0.11"
+thiserror = "1.0"
+anyhow = "1.0"
+image = { version = "0.25", default-features = false, features = ["png", "jpeg"] }
+fast_image_resize = "5.0"
+rand = "0.8"
+sha2 = "0.10"
+base64 = "0.22"
+tiny_http = "0.12"
+url = "2.5"
+open = "5.3"
+directories = "5.0"
+parking_lot = "0.12"
+urlencoding = "2.1"

@@ -1,0 +1,128 @@
+import { Theme } from "theme.slint";
+import { ScrollView } from "std-widgets.slint";
+
+export struct LyricItem {
+    time_ms: int,
+    text: string,
+    is_active: bool,
+}
+
+export component LyricsView inherits Rectangle {
+    in property <string> track_title: "";
+    in property <string> track_artist: "";
+    in property <[LyricItem]> lyrics: [];
+    in property <bool> has_lyrics: false;
+    in property <string> plain_lyrics: "";
+    in property <int> active_index: -1;
+
+    callback close_lyrics();
+
+    background: Theme.canvas;
+
+    VerticalLayout {
+        padding-left: Theme.space_xl;
+        padding-right: Theme.space_xl;
+        padding-top: Theme.space_lg;
+        spacing: Theme.space_lg;
+
+        // Header (ExtraLight Display Typography)
+        HorizontalLayout {
+            alignment: space-between;
+
+            VerticalLayout {
+                spacing: 4px;
+                Text {
+                    text: root.track_title != "" ? root.track_title : "Lyrics";
+                    font-family: Theme.font_display;
+                    font-size: 28px;
+                    font-weight: 200;
+                    letter-spacing: -1.0px;
+                    color: Theme.ink;
+                }
+                Text {
+                    text: root.track_artist != "" ? root.track_artist : "Synced with music";
+                    font-family: Theme.font_sans;
+                    font-size: 13px;
+                    font-weight: 300;
+                    color: Theme.mute;
+                }
+            }
+
+            Rectangle {
+                width: 28px;
+                height: 28px;
+                border-radius: Theme.radius_xs;
+                background: close_touch.has_hover ? Theme.canvas_hover : transparent;
+
+                close_touch := TouchArea {
+                    clicked => { root.close_lyrics(); }
+                }
+
+                Text {
+                    text: "X";
+                    font-family: Theme.font_mono;
+                    font-size: 11px;
+                    font-weight: 600;
+                    color: Theme.mute;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                }
+            }
+        }
+
+        // Lyrics Lines
+        if (root.has_lyrics && root.lyrics.length > 0): ScrollView {
+            VerticalLayout {
+                spacing: 6px;
+                for line[idx] in root.lyrics: Rectangle {
+                    height: 48px;
+                    border-radius: Theme.radius_sm;
+                    background: line.is_active ? Theme.canvas_subtle : transparent;
+
+                    HorizontalLayout {
+                        padding-left: Theme.space_md;
+                        padding-right: Theme.space_md;
+                        alignment: start;
+
+                        Text {
+                            text: line.text;
+                            font-family: Theme.font_sans;
+                            font-size: line.is_active ? 20px : 15px;
+                            font-weight: line.is_active ? 500 : 300;
+                            color: line.is_active ? Theme.ink : Theme.mute_soft;
+                            vertical-alignment: center;
+                            animate font-size, color { duration: 160ms; }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (root.plain_lyrics != "" && root.lyrics.length == 0): ScrollView {
+            Rectangle {
+                Text {
+                    text: root.plain_lyrics;
+                    font-family: Theme.font_sans;
+                    font-size: 14px;
+                    font-weight: 300;
+                    color: Theme.body;
+                    wrap: word-wrap;
+                }
+            }
+        }
+
+        if (!root.has_lyrics && root.plain_lyrics == ""): VerticalLayout {
+            alignment: center;
+            spacing: Theme.space_sm;
+
+            Text {
+                text: "No synced lyrics available for this track.";
+                font-family: Theme.font_sans;
+                font-size: 13px;
+                font-weight: 300;
+                color: Theme.mute;
+                horizontal-alignment: center;
+            }
+        }
+    }
+}

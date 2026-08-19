@@ -1,0 +1,8 @@
+/target
+**/*.rs.bk
+*.log
+.spotialt/
+tokens.json
+.env
+.DS_Store
+Thumbs.db

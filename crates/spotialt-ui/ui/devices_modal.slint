@@ -1,0 +1,408 @@
+import { Theme } from "theme.slint";
+import { IconSpeaker, IconSmartphone, IconComputer, IconTv, IconDevices, IconJam, IconRefresh, IconShare, IconClose, IconCheck } from "icons.slint";
+import { ScrollView } from "std-widgets.slint";
+
+export struct UiDevice {
+    id: string,
+    name: string,
+    device_type: string,
+    is_active: bool,
+    volume_percent: int,
+}
+
+export component DevicesModal inherits Rectangle {
+    in property <[UiDevice]> devices: [];
+    in property <bool> is_refreshing: false;
+    in property <string> active_device_name: "Questo PC";
+    in-out property <string> jam_input: "";
+    in property <string> status_message: "";
+
+    callback close_requested();
+    callback select_device(string); // device_id
+    callback refresh_devices();
+    callback open_jam(string);
+    callback share_playback();
+
+    // Dimmed background overlay
+    background: #000000aa;
+    x: 0;
+    y: 0;
+    width: 100%;
+    height: 100%;
+
+    // Prevent clicks from falling through to the background
+    TouchArea {
+        clicked => {
+            // Click outside dialog to close
+            root.close_requested();
+        }
+    }
+
+    // Modal Dialog Box
+    dialog_box := Rectangle {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        width: 480px;
+        height: 520px;
+        background: Theme.canvas;
+        border-radius: Theme.radius_md;
+        border-width: 1px;
+        border-color: Theme.hairline_strong;
+        clip: true;
+
+        // Block clicks inside modal from closing
+        TouchArea {}
+
+        VerticalLayout {
+            padding: Theme.space_lg;
+            spacing: Theme.space_md;
+
+            // Header
+            HorizontalLayout {
+                alignment: space-between;
+
+                HorizontalLayout {
+                    spacing: Theme.space_sm;
+                    alignment: start;
+
+                    IconDevices {
+                        icon_color: Theme.ink;
+                        icon_size: 18px;
+                        y: 1px;
+                    }
+
+                    Text {
+                        text: "Dispositivi & Spotify Jam";
+                        font-family: Theme.font_display;
+                        font-size: 15px;
+                        font-weight: 600;
+                        color: Theme.ink;
+                    }
+                }
+
+                Rectangle {
+                    width: 26px;
+                    height: 26px;
+                    border-radius: Theme.radius_xs;
+                    background: close_touch.has_hover ? Theme.canvas_hover : transparent;
+
+                    close_touch := TouchArea {
+                        clicked => { root.close_requested(); }
+                    }
+
+                    IconClose {
+                        x: 5px;
+                        y: 5px;
+                        icon_color: Theme.mute;
+                        icon_size: 16px;
+                    }
+                }
+            }
+
+            // Section 1: Dispositivi Disponibili
+            VerticalLayout {
+                spacing: Theme.space_xs;
+
+                HorizontalLayout {
+                    alignment: space-between;
+
+                    Text {
+                        text: "DISPOSITIVI DISPONIBILI (CONNECT)";
+                        font-family: Theme.font_mono;
+                        font-size: 10px;
+                        font-weight: 600;
+                        color: Theme.mute;
+                        letter-spacing: 0.5px;
+                    }
+
+                    Rectangle {
+                        width: 70px;
+                        height: 20px;
+                        border-radius: Theme.radius_xs;
+                        background: ref_touch.has_hover ? Theme.canvas_hover : transparent;
+
+                        ref_touch := TouchArea {
+                            clicked => { root.refresh_devices(); }
+                        }
+
+                        HorizontalLayout {
+                            spacing: 4px;
+                            alignment: center;
+                            IconRefresh {
+                                icon_color: Theme.mute;
+                                icon_size: 12px;
+                                y: 4px;
+                            }
+                            Text {
+                                text: "Aggiorna";
+                                font-family: Theme.font_sans;
+                                font-size: 10px;
+                                color: Theme.mute;
+                                vertical-alignment: center;
+                            }
+                        }
+                    }
+                }
+
+                // Device List Container
+                Rectangle {
+                    height: 190px;
+                    background: Theme.canvas_soft;
+                    border-radius: Theme.radius_sm;
+                    border-width: 1px;
+                    border-color: Theme.hairline;
+                    clip: true;
+
+                    if (root.devices.length == 0): Text {
+                        width: 100%;
+                        height: 100%;
+                        text: "Nessun altro dispositivo rilevato.\nAssicurati che Spotify o l'Echo Dot siano accesi.";
+                        font-family: Theme.font_sans;
+                        font-size: 12px;
+                        color: Theme.mute;
+                        horizontal-alignment: center;
+                        vertical-alignment: center;
+                    }
+
+                    if (root.devices.length > 0): ScrollView {
+                        width: 100%;
+                        height: 100%;
+
+                        VerticalLayout {
+                            padding: 6px;
+                            spacing: 4px;
+
+                            for dev in root.devices: Rectangle {
+                                height: 48px;
+                                border-radius: Theme.radius_xs;
+                                background: dev.is_active ? Theme.canvas_active : (dev_touch.has_hover ? Theme.canvas_hover : transparent);
+                                border-width: 1px;
+                                border-color: dev.is_active ? Theme.hairline_strong : transparent;
+
+                                dev_touch := TouchArea {
+                                    clicked => {
+                                        root.select_device(dev.id);
+                                    }
+                                }
+
+                                HorizontalLayout {
+                                    padding-left: 10px;
+                                    padding-right: 10px;
+                                    spacing: 10px;
+                                    alignment: start;
+
+                                    // Device Icon
+                                    Rectangle {
+                                        width: 24px;
+                                        height: 24px;
+                                        y: 12px;
+
+                                        if (dev.device_type == "Speaker"): IconSpeaker {
+                                            icon_color: dev.is_active ? #22c55e : Theme.ink;
+                                            icon_size: 18px;
+                                            y: 3px;
+                                        }
+
+                                        if (dev.device_type == "Smartphone"): IconSmartphone {
+                                            icon_color: dev.is_active ? #22c55e : Theme.ink;
+                                            icon_size: 18px;
+                                            y: 3px;
+                                        }
+
+                                        if (dev.device_type == "TV"): IconTv {
+                                            icon_color: dev.is_active ? #22c55e : Theme.ink;
+                                            icon_size: 18px;
+                                            y: 3px;
+                                        }
+
+                                        if (dev.device_type != "Speaker" && dev.device_type != "Smartphone" && dev.device_type != "TV"): IconComputer {
+                                            icon_color: dev.is_active ? #22c55e : Theme.ink;
+                                            icon_size: 18px;
+                                            y: 3px;
+                                        }
+                                    }
+
+                                    // Name & Subtitle
+                                    VerticalLayout {
+                                        alignment: center;
+                                        horizontal-stretch: 1;
+
+                                        Text {
+                                            text: dev.name;
+                                            font-family: Theme.font_sans;
+                                            font-size: 13px;
+                                            font-weight: 500;
+                                            color: dev.is_active ? Theme.ink : Theme.body;
+                                            overflow: elide;
+                                        }
+
+                                        HorizontalLayout {
+                                            spacing: 6px;
+                                            if (dev.is_active): Rectangle {
+                                                width: 6px;
+                                                height: 6px;
+                                                border-radius: 3px;
+                                                background: #22c55e;
+                                                y: 4px;
+                                            }
+
+                                            Text {
+                                                text: dev.is_active ? "In riproduzione" : (dev.device_type + (dev.volume_percent > 0 ? (" • " + dev.volume_percent + "% vol") : ""));
+                                                font-family: Theme.font_mono;
+                                                font-size: 10px;
+                                                color: dev.is_active ? #22c55e : Theme.mute;
+                                            }
+                                        }
+                                    }
+
+                                    // Active check indicator
+                                    if (dev.is_active): Rectangle {
+                                        width: 20px;
+                                        height: 20px;
+                                        y: 14px;
+                                        IconCheck {
+                                            icon_color: #22c55e;
+                                            icon_size: 16px;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Section 2: Spotify Jam & Ascolto Condiviso
+            VerticalLayout {
+                spacing: Theme.space_xs;
+
+                HorizontalLayout {
+                    spacing: 6px;
+                    alignment: start;
+
+                    IconJam {
+                        icon_color: Theme.ink;
+                        icon_size: 14px;
+                        y: 1px;
+                    }
+
+                    Text {
+                        text: "SPOTIFY JAM & ASCOLTO CONDIVISO";
+                        font-family: Theme.font_mono;
+                        font-size: 10px;
+                        font-weight: 600;
+                        color: Theme.mute;
+                        letter-spacing: 0.5px;
+                    }
+                }
+
+                Rectangle {
+                    height: 125px;
+                    background: Theme.canvas_soft;
+                    border-radius: Theme.radius_sm;
+                    border-width: 1px;
+                    border-color: Theme.hairline;
+
+                    VerticalLayout {
+                        padding: Theme.space_sm;
+                        spacing: Theme.space_sm;
+
+                        Text {
+                            text: "Partecipa a una Jam con amici inserendo il link, o condividi la riproduzione per indirizzare l'audio verso un Echo/speaker comune.";
+                            font-family: Theme.font_sans;
+                            font-size: 11px;
+                            color: Theme.body;
+                            wrap: word-wrap;
+                        }
+
+                        // Link Input & Action Row
+                        HorizontalLayout {
+                            spacing: Theme.space_xs;
+
+                            Rectangle {
+                                horizontal-stretch: 1;
+                                height: 32px;
+                                background: Theme.canvas_subtle;
+                                border-radius: Theme.radius_xs;
+                                border-width: 1px;
+                                border-color: Theme.hairline;
+
+                                TextInput {
+                                    x: 8px;
+                                    y: 0px;
+                                    width: parent.width - 16px;
+                                    height: 32px;
+                                    text <=> root.jam_input;
+                                    font-family: Theme.font_mono;
+                                    font-size: 11px;
+                                    color: Theme.ink;
+                                    vertical-alignment: center;
+                                }
+
+                                if (root.jam_input == ""): Text {
+                                    x: 8px;
+                                    y: 0px;
+                                    height: 32px;
+                                    text: "Incolla link Jam (es. spotify.link/...)";
+                                    font-family: Theme.font_sans;
+                                    font-size: 11px;
+                                    color: Theme.mute_soft;
+                                    vertical-alignment: center;
+                                }
+                            }
+
+                            // Join button
+                            Rectangle {
+                                width: 80px;
+                                height: 32px;
+                                border-radius: Theme.radius_xs;
+                                background: join_touch.has_hover ? #ffffff : #ededed;
+
+                                join_touch := TouchArea {
+                                    clicked => {
+                                        root.open_jam(root.jam_input);
+                                    }
+                                }
+
+                                Text {
+                                    width: 100%;
+                                    height: 100%;
+                                    text: "Partecipa";
+                                    font-family: Theme.font_sans;
+                                    font-size: 12px;
+                                    font-weight: 600;
+                                    color: #000000;
+                                    horizontal-alignment: center;
+                                    vertical-alignment: center;
+                                }
+                            }
+
+                            // Share button
+                            Rectangle {
+                                width: 34px;
+                                height: 32px;
+                                border-radius: Theme.radius_xs;
+                                background: share_touch.has_hover ? Theme.canvas_hover : Theme.canvas_subtle;
+                                border-width: 1px;
+                                border-color: Theme.hairline;
+
+                                share_touch := TouchArea {
+                                    clicked => {
+                                        root.share_playback();
+                                    }
+                                }
+
+                                IconShare {
+                                    x: 9px;
+                                    y: 8px;
+                                    icon_color: Theme.ink;
+                                    icon_size: 16px;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

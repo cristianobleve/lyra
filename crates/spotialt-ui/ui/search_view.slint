@@ -1,0 +1,162 @@
+import { Theme } from "theme.slint";
+import { IconSearch, IconPlay } from "icons.slint";
+import { UiTrack } from "track_list.slint";
+import { ScrollView } from "std-widgets.slint";
+
+export component SearchView inherits Rectangle {
+    in-out property <string> search_text: "";
+    in property <[UiTrack]> search_results: [];
+    in property <bool> is_searching: false;
+
+    callback search_query_changed(string);
+    callback track_selected(int, string); // index, uri
+
+    background: Theme.canvas;
+
+    VerticalLayout {
+        padding-left: Theme.space_xl;
+        padding-right: Theme.space_xl;
+        padding-top: Theme.space_lg;
+        spacing: Theme.space_md;
+
+        // Search Input Box (Vercel Style)
+        Rectangle {
+            height: 38px;
+            border-radius: Theme.radius_sm;
+            background: Theme.canvas_subtle;
+            border-width: 1px;
+            border-color: input_area.has-focus ? #ffffff : Theme.hairline;
+
+            HorizontalLayout {
+                padding-left: Theme.space_sm;
+                padding-right: Theme.space_sm;
+                spacing: Theme.space_sm;
+
+                IconSearch {
+                    icon_color: input_area.has-focus ? Theme.ink : Theme.mute;
+                    icon_size: 16px;
+                    y: 11px;
+                }
+
+                input_area := TextInput {
+                    text <=> root.search_text;
+                    font-family: Theme.font_sans;
+                    font-size: 13px;
+                    font-weight: 300;
+                    color: Theme.ink;
+                    vertical-alignment: center;
+                    single-line: true;
+
+                    edited => {
+                        root.search_query_changed(self.text);
+                    }
+                }
+            }
+        }
+
+        // Search Status / Heading
+        HorizontalLayout {
+            Text {
+                text: root.is_searching ? "Searching Spotify..." : (root.search_text != "" ? "Search Results" : "Search tracks, artists, albums");
+                font-family: Theme.font_mono;
+                font-size: 10px;
+                font-weight: 500;
+                letter-spacing: 0.5px;
+                color: Theme.mute;
+            }
+        }
+
+        // Results List
+        ScrollView {
+            VerticalLayout {
+                spacing: 2px;
+                for track[idx] in root.search_results: Rectangle {
+                    height: 46px;
+                    border-radius: Theme.radius_sm;
+                    background: s_row_touch.has_hover ? Theme.canvas_hover : transparent;
+
+                    s_row_touch := TouchArea {
+                        clicked => {
+                            root.track_selected(idx, track.uri);
+                        }
+                    }
+
+                    HorizontalLayout {
+                        padding-left: Theme.space_md;
+                        padding-right: Theme.space_md;
+                        spacing: Theme.space_md;
+
+                        Rectangle {
+                            width: 32px;
+                            IconPlay {
+                                icon_color: Theme.mute;
+                                icon_size: 12px;
+                                y: 17px;
+                                x: 10px;
+                            }
+                        }
+
+                        Rectangle {
+                            horizontal-stretch: 5;
+                            clip: true;
+
+                            VerticalLayout {
+                                alignment: center;
+                                spacing: 3px;
+
+                                Text {
+                                    text: track.title;
+                                    font-family: Theme.font_sans;
+                                    font-size: 13px;
+                                    font-weight: 600;
+                                    color: Theme.ink;
+                                    overflow: elide;
+                                }
+
+                                Text {
+                                    text: track.artist;
+                                    font-family: Theme.font_sans;
+                                    font-size: 11px;
+                                    font-weight: 300;
+                                    color: Theme.body;
+                                    overflow: elide;
+                                }
+                            }
+                        }
+
+                        // Album Name (Strictly Left Aligned)
+                        Rectangle {
+                            horizontal-stretch: 4;
+                            clip: true;
+
+                            Text {
+                                width: 100%;
+                                text: track.album;
+                                font-family: Theme.font_sans;
+                                font-size: 12px;
+                                font-weight: 300;
+                                color: Theme.mute;
+                                overflow: elide;
+                                vertical-alignment: center;
+                                horizontal-alignment: left;
+                            }
+                        }
+
+                        Rectangle {
+                            width: 60px;
+                            Text {
+                                width: 100%;
+                                text: track.duration;
+                                font-family: Theme.font_mono;
+                                font-size: 11px;
+                                color: Theme.mute;
+                                horizontal-alignment: right;
+                                vertical-alignment: center;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

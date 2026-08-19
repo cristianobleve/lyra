@@ -1,0 +1,17 @@
+[package]
+name = "spotialt-ui"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+build = "build.rs"
+
+[dependencies]
+slint = { workspace = true }
+image = { workspace = true }
+fast_image_resize = { workspace = true }
+log = { workspace = true }
+parking_lot = { workspace = true }
+
+[build-dependencies]
+slint-build = { workspace = true }

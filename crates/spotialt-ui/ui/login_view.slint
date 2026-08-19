@@ -1,0 +1,228 @@
+import { Theme } from "theme.slint";
+import { IconLyraLogo } from "icons.slint";
+
+export component LoginView inherits Rectangle {
+    in-out property <string> client_id: "";
+    in property <string> status_message: "";
+    in property <bool> is_logging_in: false;
+
+    callback login_clicked();
+    callback client_id_changed(string);
+    callback open_dashboard_clicked();
+
+    background: Theme.canvas;
+
+    VerticalLayout {
+        alignment: center;
+        HorizontalLayout {
+            alignment: center;
+
+            Rectangle {
+                width: 420px;
+                border-radius: Theme.radius_md;
+                background: Theme.canvas_soft;
+                border-width: 1px;
+                border-color: Theme.hairline;
+
+                VerticalLayout {
+                    padding: Theme.space_xl;
+                    spacing: Theme.space_lg;
+                    alignment: center;
+
+                    // Brand Title (ExtraLight Display Typography)
+                    VerticalLayout {
+                        spacing: Theme.space_xs;
+                        alignment: center;
+
+                        HorizontalLayout {
+                            spacing: 8px;
+                            alignment: center;
+
+                            IconLyraLogo {
+                                icon_color: Theme.ink;
+                                icon_size: 28px;
+                                y: 3px;
+                            }
+
+                            Text {
+                                text: "Lyra";
+                                font-family: Theme.font_display;
+                                font-size: 32px;
+                                font-weight: 300;
+                                letter-spacing: -1.2px;
+                                color: Theme.ink;
+                                horizontal-alignment: center;
+                            }
+                        }
+
+                        Text {
+                            text: "Ultra-low memory Spotify desktop client";
+                            font-family: Theme.font_sans;
+                            font-size: 13px;
+                            font-weight: 300;
+                            color: Theme.mute;
+                            horizontal-alignment: center;
+                        }
+                    }
+
+                    // Technical Indicators in JetBrains Mono
+                    HorizontalLayout {
+                        spacing: Theme.space_xs;
+                        alignment: center;
+
+                        Rectangle {
+                            height: 22px;
+                            border-radius: Theme.radius_xs;
+                            background: Theme.canvas_subtle;
+                            border-width: 1px;
+                            border-color: Theme.hairline;
+                            width: 110px;
+
+                            HorizontalLayout {
+                                alignment: center;
+                                Text {
+                                    text: "320 kbps Vorbis";
+                                    font-family: Theme.font_mono;
+                                    font-size: 10px;
+                                    font-weight: 400;
+                                    color: Theme.mute;
+                                    vertical-alignment: center;
+                                }
+                            }
+                        }
+
+                        Rectangle {
+                            height: 22px;
+                            border-radius: Theme.radius_xs;
+                            background: Theme.canvas_subtle;
+                            border-width: 1px;
+                            border-color: Theme.hairline;
+                            width: 96px;
+
+                            HorizontalLayout {
+                                alignment: center;
+                                Text {
+                                    text: "RAM ~20 MB";
+                                    font-family: Theme.font_mono;
+                                    font-size: 10px;
+                                    font-weight: 400;
+                                    color: Theme.mute;
+                                    vertical-alignment: center;
+                                }
+                            }
+                        }
+                    }
+
+                    // Client ID Input Group
+                    VerticalLayout {
+                        spacing: 6px;
+
+                        HorizontalLayout {
+                            alignment: space-between;
+
+                            Text {
+                                text: "SPOTIFY CLIENT ID";
+                                font-family: Theme.font_mono;
+                                font-size: 10px;
+                                font-weight: 600;
+                                letter-spacing: 0.5px;
+                                color: Theme.mute;
+                                vertical-alignment: center;
+                            }
+
+                            Rectangle {
+                                help_touch := TouchArea {
+                                    clicked => { root.open_dashboard_clicked(); }
+                                }
+                                Text {
+                                    text: "Ottieni ID ↗";
+                                    font-family: Theme.font_mono;
+                                    font-size: 10px;
+                                    color: help_touch.has_hover ? #ffffff : #0070f3;
+                                    vertical-alignment: center;
+                                }
+                            }
+                        }
+
+                        Rectangle {
+                            height: 38px;
+                            border-radius: Theme.radius_sm;
+                            background: Theme.canvas_subtle;
+                            border-width: 1px;
+                            border-color: cid_input.has-focus ? #ffffff : Theme.hairline;
+
+                            cid_input := TextInput {
+                                x: 10px;
+                                y: 0px;
+                                width: parent.width - 20px;
+                                height: 38px;
+                                text <=> root.client_id;
+                                font-family: Theme.font_mono;
+                                font-size: 11px;
+                                color: Theme.ink;
+                                vertical-alignment: center;
+                                single-line: true;
+
+                                edited => {
+                                    root.client_id_changed(self.text);
+                                }
+                            }
+
+                            if (root.client_id == ""): Text {
+                                x: 10px;
+                                y: 0px;
+                                height: 38px;
+                                text: "Incolla il tuo Spotify Client ID...";
+                                font-family: Theme.font_sans;
+                                font-size: 12px;
+                                color: Theme.mute_soft;
+                                vertical-alignment: center;
+                            }
+                        }
+
+                        Text {
+                            text: "Redirect URI: http://127.0.0.1:8888/callback";
+                            font-family: Theme.font_mono;
+                            font-size: 9px;
+                            color: Theme.mute_soft;
+                        }
+                    }
+
+                    // Direct, squared Vercel Action Button
+                    Rectangle {
+                        height: 38px;
+                        width: 100%;
+                        border-radius: Theme.radius_sm;
+                        background: root.is_logging_in ? Theme.canvas_active : (btn_touch.has_hover ? #ffffff : #ededed);
+
+                        btn_touch := TouchArea {
+                            enabled: !root.is_logging_in;
+                            clicked => { root.login_clicked(); }
+                        }
+
+                        Text {
+                            text: root.is_logging_in ? "Waiting for Browser..." : "Connect with Spotify";
+                            font-family: Theme.font_sans;
+                            font-size: 13px;
+                            font-weight: 500;
+                            color: root.is_logging_in ? Theme.mute : #000000;
+                            horizontal-alignment: center;
+                            vertical-alignment: center;
+                        }
+                    }
+
+                    // Status Message
+                    if (root.status_message != ""): Text {
+                        text: root.status_message;
+                        font-family: Theme.font_sans;
+                        font-size: 12px;
+                        font-weight: 300;
+                        color: #ff5555;
+                        horizontal-alignment: center;
+                        wrap: word-wrap;
+                    }
+                }
+            }
+        }
+    }
+}

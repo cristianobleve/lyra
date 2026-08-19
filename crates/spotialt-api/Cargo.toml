@@ -1,0 +1,19 @@
+[package]
+name = "spotialt-api"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+spotialt-core = { path = "../spotialt-core" }
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+reqwest = { workspace = true }
+log = { workspace = true }
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+url = { workspace = true }
+urlencoding = { workspace = true }
+parking_lot = { workspace = true }

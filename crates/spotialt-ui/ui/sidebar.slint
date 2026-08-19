@@ -1,0 +1,276 @@
+import { Theme } from "theme.slint";
+import { IconSearch, IconHeart, IconLyraLogo } from "icons.slint";
+import { ScrollView } from "std-widgets.slint";
+
+export struct PlaylistItem {
+    id: string,
+    name: string,
+    total_tracks: int,
+    uri: string,
+}
+
+export component Sidebar inherits Rectangle {
+    in property <string> user_name: "Spotify User";
+    in property <string> ram_usage_text: "RAM ~20.3 MB";
+    in property <[PlaylistItem]> playlists: [];
+    in property <int> selected_nav: 0; // 0 = Liked Songs, 1 = Search, 2+ = Playlist index
+    in property <int> selected_playlist_index: -1;
+
+    callback nav_liked_songs();
+    callback nav_search();
+    callback select_playlist(int, string);
+    callback logout_requested();
+
+    width: 230px;
+    background: Theme.canvas;
+
+    // Right border divider
+    Rectangle {
+        x: parent.width - 1px;
+        y: 0;
+        width: 1px;
+        height: 100%;
+        background: Theme.hairline;
+    }
+
+    VerticalLayout {
+        padding: Theme.space_md;
+        spacing: Theme.space_sm;
+
+        // Brand Title
+        HorizontalLayout {
+            spacing: Theme.space_xs;
+            alignment: start;
+
+            IconLyraLogo {
+                icon_color: Theme.ink;
+                icon_size: 16px;
+                y: 1px;
+            }
+
+            Text {
+                text: "Lyra";
+                font-family: Theme.font_display;
+                font-size: 16px;
+                font-weight: 600;
+                letter-spacing: -0.3px;
+                color: Theme.ink;
+                vertical-alignment: center;
+            }
+
+
+            Rectangle {
+                background: Theme.canvas_subtle;
+                border-radius: Theme.radius_xs;
+                border-width: 1px;
+                border-color: Theme.hairline;
+                height: 18px;
+                y: 1px;
+                width: 52px;
+
+                HorizontalLayout {
+                    alignment: center;
+                    Text {
+                        text: "NATIVE";
+                        font-family: Theme.font_mono;
+                        font-size: 9px;
+                        font-weight: 500;
+                        color: Theme.mute;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+        }
+
+        Rectangle { height: 2px; }
+
+        // Navigation Items
+        // 1. Search
+        Rectangle {
+            height: 32px;
+            border-radius: Theme.radius_sm;
+            background: root.selected_nav == 1 ? Theme.canvas_active : (search_touch.has_hover ? Theme.canvas_hover : transparent);
+            border-width: 1px;
+            border-color: root.selected_nav == 1 ? Theme.hairline_strong : transparent;
+
+            search_touch := TouchArea {
+                clicked => { root.nav_search(); }
+            }
+
+            HorizontalLayout {
+                padding-left: Theme.space_sm;
+                padding-right: Theme.space_sm;
+                spacing: Theme.space_xs;
+                alignment: start;
+
+                IconSearch {
+                    icon_color: root.selected_nav == 1 ? Theme.ink : Theme.mute;
+                    icon_size: 13px;
+                    y: 9px;
+                }
+
+                Text {
+                    text: "Search";
+                    font-family: Theme.font_sans;
+                    font-size: 13px;
+                    font-weight: root.selected_nav == 1 ? 500 : 300;
+                    color: root.selected_nav == 1 ? Theme.ink : Theme.body;
+                    vertical-alignment: center;
+                }
+            }
+        }
+
+        // 2. Liked Songs
+        Rectangle {
+            height: 32px;
+            border-radius: Theme.radius_sm;
+            background: root.selected_nav == 0 ? Theme.canvas_active : (liked_touch.has_hover ? Theme.canvas_hover : transparent);
+            border-width: 1px;
+            border-color: root.selected_nav == 0 ? Theme.hairline_strong : transparent;
+
+            liked_touch := TouchArea {
+                clicked => { root.nav_liked_songs(); }
+            }
+
+            HorizontalLayout {
+                padding-left: Theme.space_sm;
+                padding-right: Theme.space_sm;
+                spacing: Theme.space_xs;
+                alignment: start;
+
+                IconHeart {
+                    icon_color: root.selected_nav == 0 ? #ffffff : Theme.mute;
+                    filled: root.selected_nav == 0;
+                    icon_size: 13px;
+                    y: 9px;
+                }
+
+                Text {
+                    text: "Liked Songs";
+                    font-family: Theme.font_sans;
+                    font-size: 13px;
+                    font-weight: root.selected_nav == 0 ? 500 : 300;
+                    color: root.selected_nav == 0 ? Theme.ink : Theme.body;
+                    vertical-alignment: center;
+                }
+            }
+        }
+
+        // Section Divider
+        Rectangle {
+            height: 1px;
+            background: Theme.hairline;
+        }
+
+        // Playlists Header
+        HorizontalLayout {
+            padding-left: 4px;
+            padding-right: 4px;
+            Text {
+                text: "PLAYLISTS";
+                font-family: Theme.font_mono;
+                font-size: 10px;
+                font-weight: 600;
+                letter-spacing: 0.8px;
+                color: Theme.mute;
+            }
+        }
+
+        // Playlists Scroll List
+        ScrollView {
+            VerticalLayout {
+                spacing: 2px;
+                for pl[idx] in root.playlists: Rectangle {
+                    height: 30px;
+                    border-radius: Theme.radius_sm;
+                    background: (root.selected_nav == 2 && root.selected_playlist_index == idx) ? Theme.canvas_active : (pl_touch.has_hover ? Theme.canvas_hover : transparent);
+
+                    pl_touch := TouchArea {
+                        clicked => {
+                            root.select_playlist(idx, pl.id);
+                        }
+                    }
+
+                    HorizontalLayout {
+                        padding-left: Theme.space_sm;
+                        padding-right: Theme.space_sm;
+                        spacing: Theme.space_xs;
+
+                        Text {
+                            text: pl.name;
+                            font-family: Theme.font_sans;
+                            font-size: 12px;
+                            font-weight: (root.selected_nav == 2 && root.selected_playlist_index == idx) ? 500 : 300;
+                            color: (root.selected_nav == 2 && root.selected_playlist_index == idx) ? Theme.ink : Theme.body;
+                            overflow: elide;
+                            vertical-alignment: center;
+                            horizontal-stretch: 1;
+                        }
+
+                        Text {
+                            text: pl.total_tracks > 0 ? (pl.total_tracks + "") : "";
+                            font-family: Theme.font_mono;
+                            font-size: 10px;
+                            color: Theme.mute_soft;
+                            vertical-alignment: center;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Bottom User Profile & Live RAM Indicator
+        Rectangle {
+            height: 1px;
+            background: Theme.hairline;
+        }
+
+        HorizontalLayout {
+            alignment: space-between;
+            padding-top: 2px;
+
+            VerticalLayout {
+                spacing: 2px;
+                alignment: center;
+
+                Text {
+                    text: root.user_name;
+                    font-family: Theme.font_sans;
+                    font-size: 12px;
+                    font-weight: 500;
+                    color: Theme.ink;
+                    overflow: elide;
+                    max-width: 140px;
+                }
+
+                Text {
+                    text: root.ram_usage_text;
+                    font-family: Theme.font_mono;
+                    font-size: 10px;
+                    color: Theme.mute;
+                }
+            }
+
+            Rectangle {
+                width: 24px;
+                height: 24px;
+                border-radius: Theme.radius_xs;
+                background: logout_touch.has_hover ? Theme.canvas_hover : transparent;
+
+                logout_touch := TouchArea {
+                    clicked => { root.logout_requested(); }
+                }
+
+                Text {
+                    text: "X";
+                    font-family: Theme.font_mono;
+                    font-size: 10px;
+                    font-weight: 600;
+                    color: Theme.mute;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                }
+            }
+        }
+    }
+}

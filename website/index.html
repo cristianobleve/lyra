@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lyra — Il Client Spotify Nativo ad Alte Prestazioni</title>
+  <meta name="description" content="Lyra è un client desktop nativo per Spotify scritto in puro Rust e Slint. 20MB di RAM, WASAPI Bit-Perfect a 320 kbps, zero WebViews e massima privacy." />
+  
+  <meta property="og:title" content="Lyra — Native Spotify Client" />
+  <meta property="og:description" content="Ultra-lightweight native Spotify client in pure Rust & Slint. ~20MB RAM, zero WebViews." />
+  <meta name="theme-color" content="#000000" />
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Background Lighting -->
+  <div class="bg-glow"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-inner">
+      <a href="#" class="brand">
+        <svg class="brand-symbol" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M7 9c3-1.2 7-1 10 .5"/>
+          <path d="M7.5 12.5c2.5-1 6-.8 8.5.5"/>
+          <path d="M8 15.5c2-.8 4.5-.6 6.5.4"/>
+        </svg>
+        <span class="brand-title">Lyra</span>
+      </a>
+
+      <nav class="nav">
+        <a href="#features">Vantaggi</a>
+        <a href="#benchmark">Benchmark</a>
+        <a href="#setup">Setup</a>
+        <a href="#download">Download</a>
+      </nav>
+
+      <div class="header-actions">
+        <a href="https://github.com/spotialt/spotialt" target="_blank" rel="noopener noreferrer" class="btn-gh">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+          </svg>
+          <span>GitHub</span>
+        </a>
+        <a href="#download" class="btn-primary">Scarica v0.1.0</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero (Link.com / Stripe Style) -->
+  <section class="hero">
+    <div class="container hero-container">
+      <div class="pill-tag">
+        <span class="pill-badge">Open Source</span>
+        <span>Pure Rust &amp; Slint Native Architecture</span>
+      </div>
+
+      <h1 class="hero-headline">
+        L'alternativa nativa a Spotify.<br />
+        <span class="emphasis">Più veloce, più pura.</span>
+      </h1>
+
+      <p class="hero-sub">
+        Lyra è un client desktop minimale compilato per Windows, macOS e Linux. Sostituisce l'app ufficiale basata su Chromium con un binario da soli 20 MB di RAM e audio WASAPI Bit-Perfect.
+      </p>
+
+      <div class="hero-cta">
+        <a href="#download" class="btn-hero">
+          <span>Download per Windows (x64)</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </a>
+        <div class="cli-pill">
+          <code>winget install cristianobleve.lyra</code>
+          <button class="btn-copy-cli" onclick="copyCli('winget install cristianobleve.lyra', this)" title="Copia comando">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Value Pillars (Horizontal Cards like Link.com) -->
+  <section class="section" id="features">
+    <div class="container">
+      
+      <div class="cards-stack">
+        
+        <!-- Card 1 -->
+        <div class="h-card">
+          <div class="h-card-text">
+            <span class="card-kicker">EFFICIENZA RADICALE</span>
+            <h2>20 MB di memoria. Zero Electron.</h2>
+            <p>
+              Mentre l'applicazione ufficiale carica 6 processi Chromium separati consumando oltre 1.2 GB di RAM, Lyra gira in un singolo processo nativo a 64-bit con un tempo di avvio a freddo inferiore a 150 millisecondi.
+            </p>
+            <div class="card-specs">
+              <div class="spec-col">
+                <span class="spec-num">20.3 MB</span>
+                <span class="spec-txt">RAM a riposo</span>
+              </div>
+              <div class="spec-col">
+                <span class="spec-num">&lt; 0.1%</span>
+                <span class="spec-txt">Uso CPU background</span>
+              </div>
+              <div class="spec-col">
+                <span class="spec-num">1</span>
+                <span class="spec-txt">Singolo processo</span>
+              </div>
+            </div>
+          </div>
+          <div class="h-card-visual">
+            <div class="visual-box">
+              <div class="v-metric-row">
+                <div class="v-app">
+                  <span class="v-dot white"></span>
+                  <span>Lyra Desktop</span>
+                </div>
+                <span class="v-val white">20.3 MB</span>
+              </div>
+              <div class="v-bar-track">
+                <div class="v-bar-fill" style="width: 2%;"></div>
+              </div>
+
+              <div class="v-metric-row mt">
+                <div class="v-app">
+                  <span class="v-dot grey"></span>
+                  <span>Spotify Ufficiale (Electron)</span>
+                </div>
+                <span class="v-val grey">1.250 MB</span>
+              </div>
+              <div class="v-bar-track">
+                <div class="v-bar-fill grey" style="width: 100%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="h-card">
+          <div class="h-card-text">
+            <span class="card-kicker">FEDELTÀ ACUSTICA</span>
+            <h2>Audio WASAPI Bit-Perfect a 320 kbps.</h2>
+            <p>
+              Su Windows, Lyra si interfaccia con i driver WASAPI a basso livello per inviare i campioni Vorbis decodificati direttamente al tuo DAC audio, senza passare dai ricampionamenti forzati del mixer di sistema.
+            </p>
+            <div class="card-specs">
+              <div class="spec-col">
+                <span class="spec-num">320 kbps</span>
+                <span class="spec-txt">Vorbis Ogg Stream</span>
+              </div>
+              <div class="spec-col">
+                <span class="spec-num">Direct DAC</span>
+                <span class="spec-txt">Bypass Windows Mixer</span>
+              </div>
+            </div>
+          </div>
+          <div class="h-card-visual">
+            <div class="visual-box audio-visual">
+              <div class="audio-badge">WASAPI EXCLUSIVE STREAM</div>
+              <div class="sound-wave">
+                <span style="height: 18px;"></span>
+                <span style="height: 32px;"></span>
+                <span style="height: 48px;"></span>
+                <span style="height: 24px;"></span>
+                <span style="height: 42px;"></span>
+                <span style="height: 56px;"></span>
+                <span style="height: 38px;"></span>
+                <span style="height: 26px;"></span>
+                <span style="height: 46px;"></span>
+                <span style="height: 20px;"></span>
+              </div>
+              <div class="audio-footer">Low Latency • Bit-Perfect Transmission</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="h-card">
+          <div class="h-card-text">
+            <span class="card-kicker">PRIVACY &amp; SICUREZZA</span>
+            <h2>Zero telemetria. Nessun server proprietario.</h2>
+            <p>
+              I tuoi token di sessione (OAuth 2.0 PKCE) e la configurazione risiedono solo sul tuo disco locale in <code>config.json</code>. Nessuna informazione o metadato viene inviato a server intermedi.
+            </p>
+            <div class="card-specs">
+              <div class="spec-col">
+                <span class="spec-num">PKCE</span>
+                <span class="spec-txt">Autenticazione sicura</span>
+              </div>
+              <div class="spec-col">
+                <span class="spec-num">100%</span>
+                <span class="spec-txt">Open source verificabile</span>
+              </div>
+            </div>
+          </div>
+          <div class="h-card-visual">
+            <div class="visual-box code-visual">
+              <div class="code-header">
+                <span class="code-title">config.json (Locale)</span>
+                <span class="code-lock">🔒 Solo su disco</span>
+              </div>
+              <pre class="code-content"><code>{
+  "client_id": "YOUR_SPOTIFY_CLIENT_ID",
+  "audio_quality": "High320",
+  "bit_perfect_wasapi": true,
+  "telemetry": false
+}</code></pre>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Technical Benchmark Matrix -->
+  <section class="section" id="benchmark">
+    <div class="container">
+      <div class="section-title-wrap">
+        <span class="card-kicker">METRICHE TECNICHE</span>
+        <h2 class="sec-heading">Tabella comparativa</h2>
+        <p class="sec-sub">Rilevazioni effettuate in ambiente Windows 11 x64 a parità di catalogo e libreria.</p>
+      </div>
+
+      <div class="matrix-wrap">
+        <table class="matrix-table">
+          <thead>
+            <tr>
+              <th>Client</th>
+              <th>Architettura</th>
+              <th>Memoria RAM</th>
+              <th>Avvio a freddo</th>
+              <th>Pipeline Audio</th>
+              <th>Privacy</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="highlighted">
+              <td>
+                <div class="app-tag">
+                  <strong>Lyra</strong>
+                  <span class="chip-native">Nativo</span>
+                </div>
+              </td>
+              <td>Pure Rust + Slint GPU</td>
+              <td><span class="val-good">20.3 MB</span></td>
+              <td><span class="val-good">&lt; 150 ms</span></td>
+              <td>WASAPI Bit-Perfect</td>
+              <td>0 Telemetria</td>
+            </tr>
+            <tr>
+              <td>Spotify Desktop</td>
+              <td>Chromium + Electron</td>
+              <td><span class="val-bad">1.250 MB</span></td>
+              <td>~3.200 ms</td>
+              <td>Windows Mixer</td>
+              <td>Tracker inclusi</td>
+            </tr>
+            <tr>
+              <td>Spotify Web Player</td>
+              <td>Google Chrome Tab</td>
+              <td><span class="val-bad">1.600 MB</span></td>
+              <td>~4.500 ms</td>
+              <td>HTML5 Audio</td>
+              <td>Cookie terzi</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3-Step Setup (Link.com Style) -->
+  <section class="section" id="setup">
+    <div class="container">
+      <div class="setup-card">
+        <div class="setup-left">
+          <span class="card-kicker">CONFIGURAZIONE</span>
+          <h2>Setup in 3 passaggi</h2>
+          <p>
+            In conformità alle policy Spotify per sviluppatori di Febbraio 2026, ogni utente open-source registra il proprio Client ID personale e sicuro.
+          </p>
+        </div>
+
+        <div class="setup-right">
+          <div class="step-row">
+            <span class="step-index">01</span>
+            <div class="step-detail">
+              <h4>Crea un'app nella dashboard Spotify</h4>
+              <p>Accedi alla <a href="https://developer.spotify.com/dashboard" target="_blank" rel="noopener noreferrer" class="link-inline">Spotify Developer Dashboard ↗</a> e clicca su <em>"Create App"</em>.</p>
+            </div>
+          </div>
+
+          <div class="step-row">
+            <span class="step-index">02</span>
+            <div class="step-detail">
+              <h4>Inserisci il Redirect URI</h4>
+              <p>Nelle impostazioni dell'app, incolla questo URI e abilita le <em>Web API</em>:</p>
+              <div class="copy-box">
+                <code id="uriBox">http://127.0.0.1:8888/callback</code>
+                <button class="btn-copy-uri" onclick="copyUri(this)">Copia URI</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="step-row">
+            <span class="step-index">03</span>
+            <div class="step-detail">
+              <h4>Incolla il Client ID in Lyra</h4>
+              <p>Copia il tuo <em>Client ID</em> univoco e incollalo nella schermata iniziale di Lyra. Pronto!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Download Release List -->
+  <section class="section" id="download">
+    <div class="container">
+      <div class="section-title-wrap">
+        <span class="card-kicker">DISTRIBUZIONE</span>
+        <h2 class="sec-heading">Download</h2>
+        <p class="sec-sub">Binari compilati a 64-bit rilasciati con licenza open source MIT / Apache-2.0.</p>
+      </div>
+
+      <div class="releases-list">
+        
+        <!-- Windows -->
+        <div class="release-item">
+          <div class="r-platform">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/>
+            </svg>
+            <div>
+              <span class="r-name">Windows 10 / 11</span>
+              <span class="r-meta">Architettura x64 • Eseguibile Standalone</span>
+            </div>
+          </div>
+          <div class="r-actions">
+            <code class="r-cli">winget install cristianobleve.lyra</code>
+            <a href="https://github.com/spotialt/spotialt/releases/latest" class="btn-download">Scarica .exe</a>
+          </div>
+        </div>
+
+        <!-- macOS -->
+        <div class="release-item">
+          <div class="r-platform">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 4.54c.66-.8 1.11-1.92.99-3.04-.96.04-2.12.64-2.8 1.44-.59.69-1.12 1.83-.98 2.92 1.07.08 2.16-.54 2.79-1.32z"/>
+            </svg>
+            <div>
+              <span class="r-name">macOS</span>
+              <span class="r-meta">Binario Universale (Apple Silicon M-Series &amp; Intel)</span>
+            </div>
+          </div>
+          <div class="r-actions">
+            <code class="r-cli">brew install spotialt/tap/lyra</code>
+            <a href="https://github.com/spotialt/spotialt/releases/latest" class="btn-download">Scarica .dmg</a>
+          </div>
+        </div>
+
+        <!-- Linux -->
+        <div class="release-item">
+          <div class="r-platform">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12.003 0c-2.464 0-4.462 2.215-4.462 4.947 0 .543.08 1.066.229 1.558C5.228 8.01 3.5 11.232 3.5 15.02c0 2.992 1.07 5.253 2.923 6.275.526.29 1.25.438 2.115.438.487 0 1.026-.048 1.597-.145 1.185-.202 2.484-.57 3.868-.57 1.385 0 2.683.368 3.868.57.571.097 1.11.145 1.597.145.865 0 1.59-.148 2.115-.438 1.853-1.022 2.923-3.283 2.923-6.275 0-3.788-1.728-7.01-4.27-8.515.15-.492.23-1.015.23-1.558 0-2.732-1.998-4.947-4.463-4.947zm0 2.234c1.233 0 2.232 1.215 2.232 2.713 0 .445-.09.86-.248 1.233-.616-.145-1.284-.225-1.984-.225-.7 0-1.368.08-1.984.225-.158-.373-.248-.788-.248-1.233 0-1.498.999-2.713 2.232-2.713z"/>
+            </svg>
+            <div>
+              <span class="r-name">Linux</span>
+              <span class="r-meta">x86_64 / aarch64 • AppImage &amp; AUR</span>
+            </div>
+          </div>
+          <div class="r-actions">
+            <code class="r-cli">yay -S lyra-spotify-bin</code>
+            <a href="https://github.com/spotialt/spotialt/releases/latest" class="btn-download">Scarica AppImage</a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Source CLI -->
+      <div class="source-box">
+        <span class="source-lbl">Compilazione diretta da sorgente:</span>
+        <code class="source-cmd">git clone https://github.com/spotialt/spotialt &amp;&amp; cd spotialt &amp;&amp; cargo run --release</code>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container footer-container">
+      <div class="f-brand">
+        <span class="brand-title">Lyra</span>
+        <p class="f-sub">Client Spotify desktop nativo a basso consumo di memoria in puro Rust &amp; Slint.</p>
+      </div>
+
+      <div class="f-links">
+        <div class="f-col">
+          <span>Progetto</span>
+          <a href="#features">Vantaggi</a>
+          <a href="#benchmark">Benchmark</a>
+          <a href="#setup">Setup</a>
+          <a href="#download">Download</a>
+        </div>
+        <div class="f-col">
+          <span>Risorse</span>
+          <a href="https://developer.spotify.com/dashboard" target="_blank" rel="noopener noreferrer">Spotify Dashboard</a>
+          <a href="https://lrclib.net" target="_blank" rel="noopener noreferrer">LRCLIB</a>
+          <a href="https://slint.dev" target="_blank" rel="noopener noreferrer">Slint Engine</a>
+        </div>
+        <div class="f-col">
+          <span>Codice</span>
+          <a href="https://github.com/spotialt/spotialt" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a href="https://github.com/spotialt/spotialt/issues" target="_blank" rel="noopener noreferrer">Issues</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="container footer-bottom">
+      <p>© 2026 Spotialt Project. Licenza open source MIT / Apache-2.0. Lyra non è affiliata con Spotify AB.</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

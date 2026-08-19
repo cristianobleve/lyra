@@ -1,0 +1,54 @@
+import "../fonts/Inter.ttf";
+import "../fonts/DMMono.ttf";
+import "../fonts/PlusJakartaSans.ttf";
+
+export global Theme {
+    // Fonts
+    out property <string> font_sans: "Inter";
+    out property <string> font_display: "Plus Jakarta Sans";
+    out property <string> font_mono: "DM Mono";
+
+    // Vercel Dark Canvas & Surfaces
+    out property <color> canvas: #000000;
+    out property <color> canvas_soft: #0a0a0a;
+    out property <color> canvas_subtle: #121214;
+    out property <color> canvas_hover: #16161a;
+    out property <color> canvas_active: #202025;
+
+    // 1px Hairlines & Borders
+    out property <color> hairline: #1f1f23;
+    out property <color> hairline_strong: #2e2e34;
+    out property <color> hairline_highlight: #3e3e46;
+
+    // Vercel Typography Colors
+    out property <color> ink: #ededed;
+    out property <color> body: #a1a1a1;
+    out property <color> mute: #666666;
+    out property <color> mute_soft: #444444;
+
+    // Brand Accents
+    out property <color> primary_bg: #ffffff;
+    out property <color> primary_fg: #000000;
+    out property <color> link: #0070f3;
+    out property <color> link_soft: #0070f322;
+    out property <color> cyan: #50e3c2;
+    out property <color> error: #ee0000;
+    out property <color> success: #0070f3;
+
+    // Squared / Subtle Radii (Vercel Style: 0px, 3px, 4px, 6px)
+    out property <length> radius_none: 0px;
+    out property <length> radius_xs: 3px;
+    out property <length> radius_sm: 4px;
+    out property <length> radius_md: 6px;
+    out property <length> radius_lg: 8px;
+    out property <length> radius_pill: 9999px;
+
+    // Spacing
+    out property <length> space_xxs: 4px;
+    out property <length> space_xs: 8px;
+    out property <length> space_sm: 12px;
+    out property <length> space_md: 16px;
+    out property <length> space_lg: 24px;
+    out property <length> space_xl: 32px;
+    out property <length> space_2xl: 48px;
+}

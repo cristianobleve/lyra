@@ -1,0 +1,492 @@
+import { Theme } from "theme.slint";
+import { IconPlay, IconPause, IconNext, IconPrev, IconHeart, IconLyrics, IconVolume, IconShuffle, IconRepeat, IconDevices, IconSpeaker, IconSmartphone, IconComputer, IconTv } from "icons.slint";
+
+export component PlayerBar inherits Rectangle {
+    in property <string> track_title: "Not Playing";
+    in property <string> track_artist: "Select a track to start";
+    in property <image> track_cover;
+    in property <bool> has_cover: false;
+    in property <bool> is_playing: false;
+    in property <bool> is_liked: false;
+    in property <bool> shuffle_active: false;
+    in property <bool> repeat_active: false;
+    in property <bool> lyrics_open: false;
+
+    in property <float> progress_ratio: 0.0; // 0.0 to 1.0
+    in property <string> time_current: "00:00";
+    in property <string> time_total: "00:00";
+
+    in property <float> volume: 0.85; // 0.0 to 1.0
+    in property <string> bitrate_label: "320 kbps [WASAPI]";
+    in property <string> active_device_name: "Questo PC";
+    in property <string> active_device_type: "Computer";
+    in property <bool> is_remote_device: false;
+
+    callback toggle_play_pause();
+    callback skip_next();
+    callback skip_prev();
+    callback toggle_shuffle();
+    callback toggle_repeat();
+    callback toggle_lyrics();
+    callback toggle_like();
+    callback toggle_devices();
+    callback seek_requested(float); // ratio 0.0 - 1.0
+    callback volume_changed(float); // 0.0 - 1.0
+
+    height: 76px;
+    background: Theme.canvas_soft;
+
+    // Top border hairline
+    Rectangle {
+        x: 0;
+        y: 0;
+        height: 1px;
+        width: 100%;
+        background: Theme.hairline;
+    }
+
+    // ==========================================
+    // 1. LEFT SECTION (Track Info & Artwork)
+    // ==========================================
+    Rectangle {
+        x: 16px;
+        y: 0;
+        width: min(250px, max(180px, parent.width * 0.25));
+        height: 76px;
+
+        // Artwork (44x44, centered at y: 16px)
+        Rectangle {
+            x: 0;
+            y: 16px;
+            width: 44px;
+            height: 44px;
+            border-radius: Theme.radius_sm;
+            background: Theme.canvas_subtle;
+            border-width: 1px;
+            border-color: Theme.hairline;
+            clip: true;
+
+            if (root.has_cover): Image {
+                width: 100%;
+                height: 100%;
+                source: root.track_cover;
+                image-fit: cover;
+            }
+
+            if (!root.has_cover): Text {
+                width: 100%;
+                height: 100%;
+                text: "LYRA";
+                font-family: Theme.font_mono;
+                font-size: 9px;
+                font-weight: 500;
+                color: Theme.mute_soft;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+        }
+
+        // Title & Artist Box (y: 16px, height: 44px)
+        Rectangle {
+            x: 52px;
+            y: 16px;
+            width: parent.width - 82px;
+            height: 44px;
+            clip: true;
+
+            Text {
+                x: 0;
+                y: 4px;
+                width: 100%;
+                text: root.track_title;
+                font-family: Theme.font_sans;
+                font-size: 13px;
+                font-weight: 600;
+                color: Theme.ink;
+                overflow: elide;
+            }
+
+            Text {
+                x: 0;
+                y: 24px;
+                width: 100%;
+                text: root.track_artist;
+                font-family: Theme.font_sans;
+                font-size: 11px;
+                font-weight: 300;
+                color: Theme.body;
+                overflow: elide;
+            }
+        }
+
+        // Like Heart Button (y: 26px, height: 24px)
+        Rectangle {
+            x: parent.width - 26px;
+            y: 26px;
+            width: 24px;
+            height: 24px;
+            border-radius: Theme.radius_xs;
+
+            like_touch := TouchArea {
+                clicked => { root.toggle_like(); }
+            }
+
+            IconHeart {
+                x: 4px;
+                y: 4px;
+                width: 16px;
+                height: 16px;
+                icon_color: root.is_liked ? #ffffff : (like_touch.has_hover ? Theme.ink : Theme.mute);
+                filled: root.is_liked;
+                icon_size: 16px;
+            }
+        }
+    }
+
+    // ==========================================
+    // 2. CENTER SECTION (Controls & Progress Bar)
+    // ==========================================
+    center_sec := Rectangle {
+        width: min(500px, max(240px, parent.width - 550px));
+        x: (parent.width - self.width) / 2;
+        y: 0;
+        height: 76px;
+
+        // Top Row: Controls (height: 32px, y: 10px)
+        Rectangle {
+            x: 0;
+            y: 10px;
+            width: 100%;
+            height: 32px;
+
+            // Centered Controls Sub-container (width: 200px)
+            ctrl_box := Rectangle {
+                x: (parent.width - self.width) / 2;
+                y: 0;
+                width: 190px;
+                height: 32px;
+
+                // Shuffle (x: 0px, y: 4px, 24x24)
+                Rectangle {
+                    x: 0px;
+                    y: 4px;
+                    width: 24px;
+                    height: 24px;
+                    border-radius: Theme.radius_xs;
+                    background: shuf_touch.has_hover ? Theme.canvas_hover : transparent;
+                    shuf_touch := TouchArea { clicked => { root.toggle_shuffle(); } }
+                    IconShuffle {
+                        x: 4px;
+                        y: 4px;
+                        width: 16px;
+                        height: 16px;
+                        active: root.shuffle_active;
+                        icon_size: 16px;
+                    }
+                }
+
+                // Prev (x: 36px, y: 3px, 26x26)
+                Rectangle {
+                    x: 36px;
+                    y: 3px;
+                    width: 26px;
+                    height: 26px;
+                    border-radius: Theme.radius_xs;
+                    background: prev_touch.has_hover ? Theme.canvas_hover : transparent;
+                    prev_touch := TouchArea { clicked => { root.skip_prev(); } }
+                    IconPrev {
+                        x: 5px;
+                        y: 5px;
+                        width: 16px;
+                        height: 16px;
+                        icon_color: Theme.ink;
+                        icon_size: 16px;
+                    }
+                }
+
+                // Play / Pause Vercel Square (x: 76px, y: 0px, 32x32)
+                Rectangle {
+                    x: 76px;
+                    y: 0px;
+                    width: 32px;
+                    height: 32px;
+                    border-radius: Theme.radius_sm;
+                    background: play_touch.has_hover ? #ffffff : #ededed;
+
+                    play_touch := TouchArea {
+                        clicked => { root.toggle_play_pause(); }
+                    }
+
+                    if (!root.is_playing): IconPlay {
+                        x: 9px;
+                        y: 8px;
+                        width: 16px;
+                        height: 16px;
+                        icon_color: #000000;
+                        icon_size: 16px;
+                    }
+
+                    if (root.is_playing): IconPause {
+                        x: 8px;
+                        y: 8px;
+                        width: 16px;
+                        height: 16px;
+                        icon_color: #000000;
+                        icon_size: 16px;
+                    }
+                }
+
+                // Next (x: 122px, y: 3px, 26x26)
+                Rectangle {
+                    x: 122px;
+                    y: 3px;
+                    width: 26px;
+                    height: 26px;
+                    border-radius: Theme.radius_xs;
+                    background: next_touch.has_hover ? Theme.canvas_hover : transparent;
+                    next_touch := TouchArea { clicked => { root.skip_next(); } }
+                    IconNext {
+                        x: 5px;
+                        y: 5px;
+                        width: 16px;
+                        height: 16px;
+                        icon_color: Theme.ink;
+                        icon_size: 16px;
+                    }
+                }
+
+                // Repeat (x: 160px, y: 4px, 24x24)
+                Rectangle {
+                    x: 160px;
+                    y: 4px;
+                    width: 24px;
+                    height: 24px;
+                    border-radius: Theme.radius_xs;
+                    background: rep_touch.has_hover ? Theme.canvas_hover : transparent;
+                    rep_touch := TouchArea { clicked => { root.toggle_repeat(); } }
+                    IconRepeat {
+                        x: 4px;
+                        y: 4px;
+                        width: 16px;
+                        height: 16px;
+                        active: root.repeat_active;
+                        icon_size: 16px;
+                    }
+                }
+            }
+        }
+
+        // Bottom Row: Progress Bar & Timers (height: 18px, y: 48px)
+        Rectangle {
+            x: 0;
+            y: 48px;
+            width: 100%;
+            height: 18px;
+
+            // Current Time (x: 0, width: 38px)
+            Text {
+                x: 0;
+                y: 0;
+                width: 38px;
+                height: 18px;
+                text: root.time_current;
+                font-family: Theme.font_mono;
+                font-size: 11px;
+                font-weight: 400;
+                color: Theme.mute;
+                horizontal-alignment: right;
+                vertical-alignment: center;
+            }
+
+            // Interactive Progress Slider (flexible width)
+            progress_container := Rectangle {
+                x: 44px;
+                y: 0;
+                width: max(20px, parent.width - 88px);
+                height: 18px;
+
+                progress_touch := TouchArea {
+                    clicked => {
+                        if (progress_container.width > 0px) {
+                            root.seek_requested(max(0.0, min(1.0, (progress_touch.mouse-x / 1px) / (progress_container.width / 1px))));
+                        }
+                    }
+                }
+
+                // Background Track (centered at y: 7px)
+                Rectangle {
+                    x: 0;
+                    y: progress_touch.has_hover ? 6px : 7px;
+                    height: progress_touch.has_hover ? 5px : 3px;
+                    border-radius: 1.5px;
+                    background: Theme.hairline_strong;
+                    width: 100%;
+
+                    // Active Progress Fill
+                    Rectangle {
+                        x: 0;
+                        y: 0;
+                        height: 100%;
+                        border-radius: 1.5px;
+                        background: progress_touch.has_hover ? Theme.link : Theme.ink;
+                        width: max(0px, parent.width * root.progress_ratio);
+                    }
+                }
+            }
+
+            // Total Time
+            Text {
+                x: parent.width - 38px;
+                y: 0;
+                width: 38px;
+                height: 18px;
+                text: root.time_total;
+                font-family: Theme.font_mono;
+                font-size: 11px;
+                font-weight: 400;
+                color: Theme.mute;
+                horizontal-alignment: left;
+                vertical-alignment: center;
+            }
+        }
+    }
+
+    // ==========================================
+    // 3. RIGHT SECTION (Devices Button, Lyrics, Volume)
+    // ==========================================
+    Rectangle {
+        x: parent.width - 290px;
+        y: 0;
+        width: 274px;
+        height: 76px;
+
+        // Spotify Connect Device Selector Badge / Button (x: 0px, y: 24px, width: 120px)
+        Rectangle {
+            x: 0px;
+            y: 24px;
+            width: 120px;
+            height: 28px;
+            border-radius: Theme.radius_xs;
+            background: dev_btn_touch.has_hover ? Theme.canvas_hover : Theme.canvas_subtle;
+            border-width: 1px;
+            border-color: root.is_remote_device ? #22c55e : (dev_btn_touch.has_hover ? Theme.hairline_strong : Theme.hairline);
+
+            dev_btn_touch := TouchArea {
+                clicked => { root.toggle_devices(); }
+            }
+
+            HorizontalLayout {
+                padding-left: 6px;
+                padding-right: 6px;
+                spacing: 5px;
+                alignment: center;
+
+                Rectangle {
+                    width: 14px;
+                    height: 14px;
+                    y: 7px;
+
+                    if (root.active_device_type == "Speaker"): IconSpeaker {
+                        icon_color: root.is_remote_device ? #22c55e : Theme.mute;
+                        icon_size: 14px;
+                    }
+
+                    if (root.active_device_type == "Smartphone"): IconSmartphone {
+                        icon_color: root.is_remote_device ? #22c55e : Theme.mute;
+                        icon_size: 14px;
+                    }
+
+                    if (root.active_device_type == "TV"): IconTv {
+                        icon_color: root.is_remote_device ? #22c55e : Theme.mute;
+                        icon_size: 14px;
+                    }
+
+                    if (root.active_device_type != "Speaker" && root.active_device_type != "Smartphone" && root.active_device_type != "TV"): IconDevices {
+                        icon_color: root.is_remote_device ? #22c55e : Theme.mute;
+                        icon_size: 14px;
+                    }
+                }
+
+                Text {
+                    text: root.active_device_name;
+                    font-family: Theme.font_sans;
+                    font-size: 10px;
+                    font-weight: 500;
+                    color: root.is_remote_device ? #22c55e : Theme.ink;
+                    overflow: elide;
+                    vertical-alignment: center;
+                }
+            }
+        }
+
+        // Lyrics Button (x: 126px, y: 26px, 28x24)
+        Rectangle {
+            x: 126px;
+            y: 26px;
+            width: 28px;
+            height: 24px;
+            border-radius: Theme.radius_xs;
+            background: root.lyrics_open ? Theme.canvas_active : (lyrics_touch.has_hover ? Theme.canvas_hover : transparent);
+            border-width: 1px;
+            border-color: root.lyrics_open ? Theme.hairline_strong : Theme.hairline;
+
+            lyrics_touch := TouchArea {
+                clicked => { root.toggle_lyrics(); }
+            }
+
+            IconLyrics {
+                x: 6px;
+                y: 4px;
+                width: 16px;
+                height: 16px;
+                icon_color: root.lyrics_open ? Theme.ink : Theme.mute;
+                icon_size: 16px;
+            }
+        }
+
+        // Volume Icon (x: 160px, y: 30px, 16x16)
+        IconVolume {
+            x: 160px;
+            y: 30px;
+            width: 16px;
+            height: 16px;
+            icon_color: Theme.mute;
+            icon_size: 16px;
+        }
+
+        // Volume Slider (x: 182px, y: 26px, width: 80px, height: 24px)
+        vol_container := Rectangle {
+            x: 182px;
+            y: 26px;
+            width: 80px;
+            height: 24px;
+
+            vol_touch := TouchArea {
+                clicked => {
+                    if (vol_container.width > 0px) {
+                        root.volume_changed(max(0.0, min(1.0, (vol_touch.mouse-x / 1px) / (vol_container.width / 1px))));
+                    }
+                }
+            }
+
+            // Track bar (centered at y: 10.5px)
+            Rectangle {
+                x: 0;
+                y: 10px;
+                height: 3px;
+                border-radius: 1.5px;
+                background: Theme.hairline_strong;
+                width: 100%;
+
+                Rectangle {
+                    x: 0;
+                    y: 0;
+                    height: 100%;
+                    border-radius: 1.5px;
+                    background: vol_touch.has_hover ? Theme.link : Theme.ink;
+                    width: max(0px, parent.width * root.volume);
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,235 @@
+import { Theme } from "theme.slint";
+import { Sidebar, PlaylistItem } from "sidebar.slint";
+import { TrackList, UiTrack } from "track_list.slint";
+import { PlayerBar } from "player_bar.slint";
+import { SearchView } from "search_view.slint";
+import { LyricsView, LyricItem } from "lyrics_view.slint";
+import { LoginView } from "login_view.slint";
+import { DevicesModal, UiDevice } from "devices_modal.slint";
+
+export { Theme, PlaylistItem, UiTrack, LyricItem, UiDevice }
+
+export component AppWindow inherits Window {
+    title: "Lyra";
+    min-width: 680px;
+
+    min-height: 460px;
+    preferred-width: 1100px;
+    preferred-height: 720px;
+    background: Theme.canvas;
+    default-font-family: Theme.font_sans;
+
+    // Authentication State
+    in property <bool> is_logged_in: false;
+    in-out property <string> login_client_id: "";
+    in property <string> user_name: "Spotify User";
+    in property <string> ram_usage_text: "RAM ~20.3 MB";
+    in property <string> login_status_message: "";
+    in property <bool> is_logging_in: false;
+
+    // View Navigation
+    in-out property <int> active_nav: 0; // 0 = Liked Songs, 1 = Search, 2 = Playlist
+    in-out property <int> selected_playlist_idx: -1;
+    in-out property <bool> show_lyrics: false;
+
+    // Devices & Jam Modal State
+    in-out property <bool> show_devices_modal: false;
+    in property <[UiDevice]> devices_list: [];
+    in property <string> active_device_name: "Questo PC";
+    in property <string> active_device_type: "Computer";
+    in property <bool> is_remote_device: false;
+    in-out property <string> jam_input_link: "";
+
+    // Data Models
+    in property <[PlaylistItem]> playlists: [];
+    in property <string> current_view_title: "Liked Songs";
+    in property <string> current_view_subtitle: "50 tracks in library";
+    in property <[UiTrack]> current_tracks: [];
+    in property <bool> is_loading_tracks: false;
+
+    // Search Data
+    in-out property <string> search_query: "";
+    in property <[UiTrack]> search_results: [];
+    in property <bool> is_searching: false;
+
+    // Lyrics Data
+    in property <[LyricItem]> lyrics_lines: [];
+    in property <bool> has_lyrics: false;
+    in property <string> plain_lyrics: "";
+    in property <int> active_lyric_index: -1;
+
+    // Player State
+    in property <string> current_track_title: "Not Playing";
+    in property <string> current_track_artist: "Select a track to start";
+    in property <image> current_track_cover;
+    in property <bool> has_cover: false;
+    in property <bool> is_playing: false;
+    in property <bool> is_liked: false;
+    in property <bool> shuffle_active: false;
+    in property <bool> repeat_active: false;
+    in property <float> progress_ratio: 0.0;
+    in property <string> time_current: "00:00";
+    in property <string> time_total: "00:00";
+    in property <float> volume: 0.85;
+    in property <string> bitrate_label: "320 kbps [WASAPI]";
+
+    // Callbacks to Rust Backend
+    callback request_login();
+    callback login_client_id_changed(string);
+    callback open_spotify_dashboard();
+    callback request_logout();
+    callback nav_liked_songs();
+    callback nav_search();
+    callback select_playlist(int, string);
+    callback track_double_clicked(int, string);
+    callback search_query_changed(string);
+    callback search_track_selected(int, string);
+    callback toggle_like_clicked(int, string);
+
+    callback player_toggle_play_pause();
+    callback player_skip_next();
+    callback player_skip_prev();
+    callback player_toggle_shuffle();
+    callback player_toggle_repeat();
+    callback player_toggle_lyrics();
+    callback player_toggle_like();
+    callback player_toggle_devices();
+    callback select_device_requested(string);
+    callback refresh_devices_requested();
+    callback open_jam_requested(string);
+    callback share_playback_requested();
+    callback player_seek_requested(float);
+    callback player_volume_changed(float);
+
+    if (!root.is_logged_in): LoginView {
+        client_id <=> root.login_client_id;
+        status_message: root.login_status_message;
+        is_logging_in: root.is_logging_in;
+        login_clicked => { root.request_login(); }
+        client_id_changed(id) => { root.login_client_id_changed(id); }
+        open_dashboard_clicked => { root.open_spotify_dashboard(); }
+    }
+
+    if (root.is_logged_in): VerticalLayout {
+        spacing: 0px;
+
+        // Top Main Area: Sidebar + Active Content View
+        HorizontalLayout {
+            spacing: 0px;
+            horizontal-stretch: 1;
+            vertical-stretch: 1;
+
+            Sidebar {
+                user_name: root.user_name;
+                ram_usage_text: root.ram_usage_text;
+                playlists: root.playlists;
+                selected_nav: root.active_nav;
+                selected_playlist_index: root.selected_playlist_idx;
+
+                nav_liked_songs => {
+                    root.active_nav = 0;
+                    root.show_lyrics = false;
+                    root.nav_liked_songs();
+                }
+                nav_search => {
+                    root.active_nav = 1;
+                    root.show_lyrics = false;
+                    root.nav_search();
+                }
+                select_playlist(idx, id) => {
+                    root.active_nav = 2;
+                    root.selected_playlist_idx = idx;
+                    root.show_lyrics = false;
+                    root.select_playlist(idx, id);
+                }
+                logout_requested => {
+                    root.request_logout();
+                }
+            }
+
+            // Main Content Switching
+            Rectangle {
+                horizontal-stretch: 1;
+                background: Theme.canvas;
+
+                if (root.show_lyrics): LyricsView {
+                    track_title: root.current_track_title;
+                    track_artist: root.current_track_artist;
+                    lyrics: root.lyrics_lines;
+                    has_lyrics: root.has_lyrics;
+                    plain_lyrics: root.plain_lyrics;
+                    active_index: root.active_lyric_index;
+                    close_lyrics => { root.show_lyrics = false; }
+                }
+
+                if (!root.show_lyrics && root.active_nav == 1): SearchView {
+                    search_text <=> root.search_query;
+                    search_results: root.search_results;
+                    is_searching: root.is_searching;
+                    search_query_changed(q) => { root.search_query_changed(q); }
+                    track_selected(idx, uri) => { root.search_track_selected(idx, uri); }
+                }
+
+                if (!root.show_lyrics && root.active_nav != 1): TrackList {
+                    list_title: root.current_view_title;
+                    list_subtitle: root.current_view_subtitle;
+                    tracks: root.current_tracks;
+                    is_loading: root.is_loading_tracks;
+                    track_double_clicked(idx, uri) => { root.track_double_clicked(idx, uri); }
+                    toggle_like_clicked(idx, id) => { root.toggle_like_clicked(idx, id); }
+                }
+            }
+        }
+
+        // Bottom Sticky Player Bar
+        PlayerBar {
+            vertical-stretch: 0;
+            track_title: root.current_track_title;
+            track_artist: root.current_track_artist;
+            track_cover: root.current_track_cover;
+            has_cover: root.has_cover;
+            is_playing: root.is_playing;
+            is_liked: root.is_liked;
+            shuffle_active: root.shuffle_active;
+            repeat_active: root.repeat_active;
+            lyrics_open: root.show_lyrics;
+            progress_ratio: root.progress_ratio;
+            time_current: root.time_current;
+            time_total: root.time_total;
+            volume: root.volume;
+            bitrate_label: root.bitrate_label;
+            active_device_name: root.active_device_name;
+            active_device_type: root.active_device_type;
+            is_remote_device: root.is_remote_device;
+
+            toggle_play_pause => { root.player_toggle_play_pause(); }
+            skip_next => { root.player_skip_next(); }
+            skip_prev => { root.player_skip_prev(); }
+            toggle_shuffle => { root.player_toggle_shuffle(); }
+            toggle_repeat => { root.player_toggle_repeat(); }
+            toggle_lyrics => {
+                root.show_lyrics = !root.show_lyrics;
+                root.player_toggle_lyrics();
+            }
+            toggle_like => { root.player_toggle_like(); }
+            toggle_devices => {
+                root.show_devices_modal = !root.show_devices_modal;
+                root.player_toggle_devices();
+            }
+            seek_requested(r) => { root.player_seek_requested(r); }
+            volume_changed(v) => { root.player_volume_changed(v); }
+        }
+    }
+
+    // Devices & Jam Overlay Modal
+    if (root.show_devices_modal): DevicesModal {
+        devices: root.devices_list;
+        active_device_name: root.active_device_name;
+        jam_input <=> root.jam_input_link;
+        close_requested => { root.show_devices_modal = false; }
+        select_device(id) => { root.select_device_requested(id); }
+        refresh_devices => { root.refresh_devices_requested(); }
+        open_jam(link) => { root.open_jam_requested(link); }
+        share_playback => { root.share_playback_requested(); }
+    }
+}

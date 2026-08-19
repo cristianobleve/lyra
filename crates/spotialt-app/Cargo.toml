@@ -1,0 +1,27 @@
+[package]
+name = "spotialt-app"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "lyra"
+path = "src/main.rs"
+
+[dependencies]
+spotialt-core = { path = "../spotialt-core" }
+spotialt-api = { path = "../spotialt-api" }
+spotialt-ui = { path = "../spotialt-ui" }
+slint = { workspace = true }
+tokio = { workspace = true }
+log = { workspace = true }
+env_logger = { workspace = true }
+anyhow = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+open = { workspace = true }
+parking_lot = { workspace = true }
+reqwest = { workspace = true }
+image = { workspace = true }
+windows-sys = { version = "0.52", features = ["Win32_System_ProcessStatus", "Win32_System_Threading"] }

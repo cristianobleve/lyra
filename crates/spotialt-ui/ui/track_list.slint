@@ -1,0 +1,262 @@
+import { Theme } from "theme.slint";
+import { IconPlay } from "icons.slint";
+import { ScrollView } from "std-widgets.slint";
+
+export struct UiTrack {
+    id: string,
+    uri: string,
+    title: string,
+    artist: string,
+    album: string,
+    duration: string,
+    duration_ms: int,
+    cover_url: string,
+    is_playing: bool,
+    is_liked: bool,
+}
+
+export component TrackList inherits Rectangle {
+    in property <string> list_title: "Liked Songs";
+    in property <string> list_subtitle: "50 tracks in library";
+    in property <[UiTrack]> tracks: [];
+    in property <int> active_track_index: -1;
+    in property <bool> is_loading: false;
+
+    callback track_double_clicked(int, string); // index, uri
+    callback toggle_like_clicked(int, string);  // index, id
+
+    background: Theme.canvas;
+
+    VerticalLayout {
+        padding-left: Theme.space_xl;
+        padding-right: Theme.space_xl;
+        padding-top: Theme.space_lg;
+        spacing: Theme.space_md;
+
+        // View Header (ExtraLight Display Typography)
+        VerticalLayout {
+            spacing: 4px;
+
+            Text {
+                text: root.list_title;
+                font-family: Theme.font_display;
+                font-size: 32px;
+                font-weight: 200;
+                letter-spacing: -1.2px;
+                color: Theme.ink;
+            }
+
+            Text {
+                text: root.is_loading ? "Loading tracks..." : root.list_subtitle;
+                font-family: Theme.font_sans;
+                font-size: 13px;
+                font-weight: 300;
+                color: Theme.mute;
+            }
+        }
+
+        // Table Header
+        Rectangle {
+            height: 28px;
+
+            Rectangle {
+                y: parent.height - 1px;
+                height: 1px;
+                width: 100%;
+                background: Theme.hairline;
+            }
+
+            HorizontalLayout {
+                padding-left: Theme.space_md;
+                padding-right: Theme.space_md;
+                spacing: Theme.space_md;
+
+                // Col 1: # (32px)
+                Rectangle {
+                    width: 32px;
+                    Text {
+                        width: 100%;
+                        text: "#";
+                        font-family: Theme.font_mono;
+                        font-size: 11px;
+                        font-weight: 500;
+                        letter-spacing: 0.5px;
+                        color: Theme.mute;
+                        vertical-alignment: center;
+                        horizontal-alignment: center;
+                    }
+                }
+
+                // Col 2: TITLE (flex 5)
+                Rectangle {
+                    horizontal-stretch: 5;
+                    Text {
+                        width: 100%;
+                        text: "TITLE";
+                        font-family: Theme.font_mono;
+                        font-size: 11px;
+                        font-weight: 500;
+                        letter-spacing: 0.5px;
+                        color: Theme.mute;
+                        vertical-alignment: center;
+                        horizontal-alignment: left;
+                    }
+                }
+
+                // Col 3: ALBUM (flex 4 - Left aligned to column guide)
+                Rectangle {
+                    horizontal-stretch: 4;
+                    Text {
+                        width: 100%;
+                        text: "ALBUM";
+                        font-family: Theme.font_mono;
+                        font-size: 11px;
+                        font-weight: 500;
+                        letter-spacing: 0.5px;
+                        color: Theme.mute;
+                        vertical-alignment: center;
+                        horizontal-alignment: left;
+                    }
+                }
+
+                // Col 4: TIME (60px)
+                Rectangle {
+                    width: 60px;
+                    Text {
+                        width: 100%;
+                        text: "TIME";
+                        font-family: Theme.font_mono;
+                        font-size: 11px;
+                        font-weight: 500;
+                        letter-spacing: 0.5px;
+                        color: Theme.mute;
+                        vertical-alignment: center;
+                        horizontal-alignment: right;
+                    }
+                }
+            }
+        }
+
+        // Tracks List
+        ScrollView {
+            VerticalLayout {
+                spacing: 2px;
+                for track[idx] in root.tracks: Rectangle {
+                    height: 46px;
+                    border-radius: Theme.radius_sm;
+                    background: track.is_playing ? Theme.canvas_active : (row_touch.has_hover ? Theme.canvas_hover : transparent);
+
+                    row_touch := TouchArea {
+                        double-clicked => {
+                            root.track_double_clicked(idx, track.uri);
+                        }
+                        clicked => {
+                            root.track_double_clicked(idx, track.uri);
+                        }
+                    }
+
+                    HorizontalLayout {
+                        padding-left: Theme.space_md;
+                        padding-right: Theme.space_md;
+                        spacing: Theme.space_md;
+
+                        // 1. # or Play Icon (32px)
+                        Rectangle {
+                            width: 32px;
+
+                            if (!row_touch.has_hover && !track.is_playing): Text {
+                                width: 100%;
+                                text: (idx + 1) + "";
+                                font-family: Theme.font_mono;
+                                font-size: 11px;
+                                font-weight: 400;
+                                color: Theme.mute;
+                                vertical-alignment: center;
+                                horizontal-alignment: center;
+                            }
+
+                            if (track.is_playing && !row_touch.has_hover): Rectangle {
+                                width: 6px;
+                                height: 6px;
+                                border-radius: 3px;
+                                background: Theme.link;
+                                y: 20px;
+                                x: 13px;
+                            }
+
+                            if (row_touch.has_hover): IconPlay {
+                                icon_color: Theme.ink;
+                                icon_size: 12px;
+                                y: 17px;
+                                x: 10px;
+                            }
+                        }
+
+                        // 2. Title & Artist (flex 5)
+                        Rectangle {
+                            horizontal-stretch: 5;
+                            clip: true;
+
+                            VerticalLayout {
+                                alignment: center;
+                                spacing: 3px;
+
+                                Text {
+                                    text: track.title;
+                                    font-family: Theme.font_sans;
+                                    font-size: 13px;
+                                    font-weight: 600;
+                                    color: track.is_playing ? Theme.link : Theme.ink;
+                                    overflow: elide;
+                                }
+
+                                Text {
+                                    text: track.artist;
+                                    font-family: Theme.font_sans;
+                                    font-size: 11px;
+                                    font-weight: 300;
+                                    color: Theme.body;
+                                    overflow: elide;
+                                }
+                            }
+                        }
+
+                        // 3. Album Name (flex 4 - Strictly aligned with ALBUM column header)
+                        Rectangle {
+                            horizontal-stretch: 4;
+                            clip: true;
+
+                            Text {
+                                width: 100%;
+                                text: track.album;
+                                font-family: Theme.font_sans;
+                                font-size: 12px;
+                                font-weight: 300;
+                                color: Theme.mute;
+                                overflow: elide;
+                                vertical-alignment: center;
+                                horizontal-alignment: left;
+                            }
+                        }
+
+                        // 4. Duration in DM Mono (60px)
+                        Rectangle {
+                            width: 60px;
+
+                            Text {
+                                width: 100%;
+                                text: track.duration;
+                                font-family: Theme.font_mono;
+                                font-size: 11px;
+                                font-weight: 400;
+                                color: Theme.mute;
+                                horizontal-alignment: right;
+                                vertical-alignment: center;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

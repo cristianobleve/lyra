@@ -1,0 +1,417 @@
+import { Theme } from "theme.slint";
+
+export component IconLyraLogo inherits Rectangle {
+    in property <color> icon_color: Theme.ink;
+    in property <length> icon_size: 18px;
+    width: icon_size;
+    height: icon_size;
+
+    Path {
+        width: 100%;
+        height: 100%;
+        stroke: root.icon_color;
+        stroke-width: 1.75px;
+        fill: transparent;
+        viewbox-x: 0;
+        viewbox-y: 0;
+        viewbox-width: 24;
+        viewbox-height: 24;
+        commands: "M 4 4 v 8 a 8 8 0 0 0 16 0 v -8 M 4 4 h 16 M 9 4 v 12 M 15 4 v 12 M 12 20 v 3 M 9 23 h 6";
+    }
+}
+
+export component IconPlay inherits Rectangle {
+
+    in property <color> icon_color: Theme.ink;
+    in property <length> icon_size: 16px;
+    width: icon_size;
+    height: icon_size;
+
+    Path {
+        width: 100%;
+        height: 100%;
+        fill: root.icon_color;
+        viewbox-x: 0;
+        viewbox-y: 0;
+        viewbox-width: 24;
+        viewbox-height: 24;
+        commands: "M 7 4 v 16 l 13 -8 z";
+    }
+}
+
+export component IconPause inherits Rectangle {
+    in property <color> icon_color: Theme.ink;
+    in property <length> icon_size: 16px;
+    width: icon_size;
+    height: icon_size;
+
+    Path {
+        width: 100%;
+        height: 100%;
+        fill: root.icon_color;
+        viewbox-x: 0;
+        viewbox-y: 0;
+        viewbox-width: 24;
+        viewbox-height: 24;
+        commands: "M 6 5 h 4 v 14 h -4 z M 14 5 h 4 v 14 h -4 z";
+    }
+}
+
+export component IconNext inherits Rectangle {
+    in property <color> icon_color: Theme.ink;
+    in property <length> icon_size: 16px;
+    width: icon_size;
+    height: icon_size;
+
+    Path {
+        width: 100%;
+        height: 100%;
+        fill: root.icon_color;
+        stroke: root.icon_color;
+        stroke-width: 1.5px;
+        viewbox-x: 0;
+        viewbox-y: 0;
+        viewbox-width: 24;
+        viewbox-height: 24;
+        commands: "M 3 5 v 14 l 8 -7 z M 14 5 v 14 l 8 -7 z M 21 5 v 14";
+    }
+}
+
+export component IconPrev inherits Rectangle {
+    in property <color> icon_color: Theme.ink;
+    in property <length> icon_size: 16px;
+    width: icon_size;
+    height: icon_size;
+
+    Path {
+        width: 100%;
+        height: 100%;
+        fill: root.icon_color;
+        stroke: root.icon_color;
+        stroke-width: 1.5px;
+        viewbox-x: 0;
+        viewbox-y: 0;
+        viewbox-width: 24;
+        viewbox-height: 24;
+        commands: "M 21 5 v 14 l -8 -7 z M 10 5 v 14 l -8 -7 z M 3 5 v 14";
+    }
+}
+
+export component IconSearch inherits Rectangle {
+    in property <color> icon_color: Theme.mute;
+    in property <length> icon_size: 16px;
+    width: icon_size;
+    height: icon_size;
+
+    Path {
+        width: 100%;
+        height: 100%;
+        stroke: root.icon_color;
+        stroke-width: 1.75px;
+        viewbox-x: 0;
+        viewbox-y: 0;
+        viewbox-width: 24;
+        viewbox-height: 24;
+        commands: "M 10 10 m -7 0 a 7 7 0 1 0 14 0 a 7 7 0 1 0 -14 0 M 21 21 l -6 -6";
+    }
+}
+
+export component IconHeart inherits Rectangle {
+    in property <color> icon_color: Theme.mute;
+    in property <bool> filled: false;
+    in property <length> icon_size: 16px;
+    width: icon_size;
+    height: icon_size;
+
+    Path {
+        width: 100%;
+        height: 100%;
+        fill: root.filled ? root.icon_color : transparent;
+        stroke: root.icon_color;
+        stroke-width: root.filled ? 0px : 1.75px;
+        viewbox-x: 0;
+        viewbox-y: 0;
+        viewbox-width: 24;
+        viewbox-height: 24;
+        commands: "M 19.5 12.572 l -7.5 7.428 l -7.5 -7.428 a 5 5 0 1 1 7.5 -6.566 a 5 5 0 1 1 7.5 6.572";
+    }
+}
+
+export component IconLyrics inherits Rectangle {
+    in property <color> icon_color: Theme.mute;
+    in property <length> icon_size: 16px;
+    width: icon_size;
+    height: icon_size;
+
+    Path {
+        width: 100%;
+        height: 100%;
+        stroke: root.icon_color;
+        stroke-width: 1.75px;
+        viewbox-x: 0;
+        viewbox-y: 0;
+        viewbox-width: 24;
+        viewbox-height: 24;
+        commands: "M 4 6 h 16 M 4 12 h 16 M 4 18 h 10";
+    }
+}
+
+export component IconVolume inherits Rectangle {
+    in property <color> icon_color: Theme.mute;
+    in property <length> icon_size: 16px;
+    width: icon_size;
+    height: icon_size;
+
+    Path {
+        width: 100%;
+        height: 100%;
+        stroke: root.icon_color;
+        fill: transparent;
+        stroke-width: 1.75px;
+        viewbox-x: 0;
+        viewbox-y: 0;
+        viewbox-width: 24;
+        viewbox-height: 24;
+        commands: "M 15 8 a 5 5 0 0 1 0 8 M 17.7 5 a 9 9 0 0 1 0 14 M 6 15 h -2 a 1 1 0 0 1 -1 -1 v -4 a 1 1 0 0 1 1 -1 h 2 l 3.5 -4.5 a 0.8 0.8 0 0 1 1.5 0.5 v 14 a 0.8 0.8 0 0 1 -1.5 0.5 l -3.5 -4.5";
+    }
+}
+
+export component IconShuffle inherits Rectangle {
+    in property <color> icon_color: Theme.mute;
+    in property <bool> active: false;
+    in property <length> icon_size: 16px;
+    width: icon_size;
+    height: icon_size;
+
+    Path {
+        width: 100%;
+        height: 100%;
+        stroke: root.active ? #ffffff : root.icon_color;
+        stroke-width: 1.75px;
+        viewbox-x: 0;
+        viewbox-y: 0;
+        viewbox-width: 24;
+        viewbox-height: 24;
+        commands: "M 18 4 l 3 3 l -3 3 M 18 20 l 3 -3 l -3 -3 M 3 7 h 3 a 5 5 0 0 1 5 5 a 5 5 0 0 0 5 5 h 5 M 21 7 h -5 a 4.978 4.978 0 0 0 -3 1.018 M 6 17 h -3 M 10.5 13.5 a 4.978 4.978 0 0 0 2.5 3.482";
+    }
+}
+
+export component IconRepeat inherits Rectangle {
+    in property <color> icon_color: Theme.mute;
+    in property <bool> active: false;
+    in property <length> icon_size: 16px;
+    width: icon_size;
+    height: icon_size;
+
+    Path {
+        width: 100%;
+        height: 100%;
+        stroke: root.active ? #ffffff : root.icon_color;
+        stroke-width: 1.75px;
+        viewbox-x: 0;
+        viewbox-y: 0;
+        viewbox-width: 24;
+        viewbox-height: 24;
+        commands: "M 4 12 v -3 a 3 3 0 0 1 3 -3 h 13 m -3 -3 l 3 3 l -3 3 M 20 12 v 3 a 3 3 0 0 1 -3 3 h -13 m 3 3 l -3 -3 l 3 -3";
+    }
+}
+
+export component IconDevices inherits Rectangle {
+    in property <color> icon_color: Theme.mute;
+    in property <length> icon_size: 16px;
+    width: icon_size;
+    height: icon_size;
+
+    Path {
+        width: 100%;
+        height: 100%;
+        stroke: root.icon_color;
+        stroke-width: 1.75px;
+        fill: transparent;
+        viewbox-x: 0;
+        viewbox-y: 0;
+        viewbox-width: 24;
+        viewbox-height: 24;
+        commands: "M 4 6 h 16 a 2 2 0 0 1 2 2 v 7 a 2 2 0 0 1 -2 2 h -16 a 2 2 0 0 1 -2 -2 v -7 a 2 2 0 0 1 2 -2 z M 8 20 h 8 M 12 17 v 3";
+    }
+}
+
+export component IconSpeaker inherits Rectangle {
+    in property <color> icon_color: Theme.mute;
+    in property <length> icon_size: 16px;
+    width: icon_size;
+    height: icon_size;
+
+    Path {
+        width: 100%;
+        height: 100%;
+        stroke: root.icon_color;
+        stroke-width: 1.75px;
+        fill: transparent;
+        viewbox-x: 0;
+        viewbox-y: 0;
+        viewbox-width: 24;
+        viewbox-height: 24;
+        commands: "M 5 3 h 14 a 2 2 0 0 1 2 2 v 14 a 2 2 0 0 1 -2 2 h -14 a 2 2 0 0 1 -2 -2 v -14 a 2 2 0 0 1 2 -2 z M 12 7 m -1 0 a 1 1 0 1 0 2 0 a 1 1 0 1 0 -2 0 M 12 14 m -3 0 a 3 3 0 1 0 6 0 a 3 3 0 1 0 -6 0";
+    }
+}
+
+export component IconSmartphone inherits Rectangle {
+    in property <color> icon_color: Theme.mute;
+    in property <length> icon_size: 16px;
+    width: icon_size;
+    height: icon_size;
+
+    Path {
+        width: 100%;
+        height: 100%;
+        stroke: root.icon_color;
+        stroke-width: 1.75px;
+        fill: transparent;
+        viewbox-x: 0;
+        viewbox-y: 0;
+        viewbox-width: 24;
+        viewbox-height: 24;
+        commands: "M 7 2 h 10 a 2 2 0 0 1 2 2 v 16 a 2 2 0 0 1 -2 2 h -10 a 2 2 0 0 1 -2 -2 v -16 a 2 2 0 0 1 2 -2 z M 11 18 h 2";
+    }
+}
+
+export component IconComputer inherits Rectangle {
+    in property <color> icon_color: Theme.mute;
+    in property <length> icon_size: 16px;
+    width: icon_size;
+    height: icon_size;
+
+    Path {
+        width: 100%;
+        height: 100%;
+        stroke: root.icon_color;
+        stroke-width: 1.75px;
+        fill: transparent;
+        viewbox-x: 0;
+        viewbox-y: 0;
+        viewbox-width: 24;
+        viewbox-height: 24;
+        commands: "M 3 4 h 18 a 1 1 0 0 1 1 1 v 11 a 1 1 0 0 1 -1 1 h -18 a 1 1 0 0 1 -1 -1 v -11 a 1 1 0 0 1 1 -1 z M 2 19 h 20";
+    }
+}
+
+export component IconTv inherits Rectangle {
+    in property <color> icon_color: Theme.mute;
+    in property <length> icon_size: 16px;
+    width: icon_size;
+    height: icon_size;
+
+    Path {
+        width: 100%;
+        height: 100%;
+        stroke: root.icon_color;
+        stroke-width: 1.75px;
+        fill: transparent;
+        viewbox-x: 0;
+        viewbox-y: 0;
+        viewbox-width: 24;
+        viewbox-height: 24;
+        commands: "M 2 7 h 20 a 1 1 0 0 1 1 1 v 10 a 1 1 0 0 1 -1 1 h -20 a 1 1 0 0 1 -1 -1 v -10 a 1 1 0 0 1 1 -1 z M 17 3 l -5 4 l -5 -4";
+    }
+}
+
+export component IconJam inherits Rectangle {
+    in property <color> icon_color: Theme.mute;
+    in property <length> icon_size: 16px;
+    width: icon_size;
+    height: icon_size;
+
+    Path {
+        width: 100%;
+        height: 100%;
+        stroke: root.icon_color;
+        stroke-width: 1.75px;
+        fill: transparent;
+        viewbox-x: 0;
+        viewbox-y: 0;
+        viewbox-width: 24;
+        viewbox-height: 24;
+        commands: "M 17 21 v -2 a 4 4 0 0 0 -4 -4 h -6 a 4 4 0 0 0 -4 4 v 2 M 10 11 a 4 4 0 1 0 0 -8 a 4 4 0 0 0 0 8 z M 23 21 v -2 a 4 4 0 0 0 -3 -3.87 M 16 3.13 a 4 4 0 0 1 0 7.75";
+    }
+}
+
+export component IconRefresh inherits Rectangle {
+    in property <color> icon_color: Theme.mute;
+    in property <length> icon_size: 16px;
+    width: icon_size;
+    height: icon_size;
+
+    Path {
+        width: 100%;
+        height: 100%;
+        stroke: root.icon_color;
+        stroke-width: 1.75px;
+        fill: transparent;
+        viewbox-x: 0;
+        viewbox-y: 0;
+        viewbox-width: 24;
+        viewbox-height: 24;
+        commands: "M 23 4 v 6 h -6 M 1 20 v -6 h 6 M 3.51 9 a 9 9 0 0 1 14.85 -3.36 l 4.64 4.36 M 20.49 15 a 9 9 0 0 1 -14.85 3.36 l -4.64 -4.36";
+    }
+}
+
+export component IconShare inherits Rectangle {
+    in property <color> icon_color: Theme.mute;
+    in property <length> icon_size: 16px;
+    width: icon_size;
+    height: icon_size;
+
+    Path {
+        width: 100%;
+        height: 100%;
+        stroke: root.icon_color;
+        stroke-width: 1.75px;
+        fill: transparent;
+        viewbox-x: 0;
+        viewbox-y: 0;
+        viewbox-width: 24;
+        viewbox-height: 24;
+        commands: "M 4 12 v 8 a 2 2 0 0 0 2 2 h 12 a 2 2 0 0 0 2 -2 v -8 M 16 6 l -4 -4 l -4 4 M 12 2 v 13";
+    }
+}
+
+export component IconClose inherits Rectangle {
+    in property <color> icon_color: Theme.mute;
+    in property <length> icon_size: 16px;
+    width: icon_size;
+    height: icon_size;
+
+    Path {
+        width: 100%;
+        height: 100%;
+        stroke: root.icon_color;
+        stroke-width: 1.75px;
+        viewbox-x: 0;
+        viewbox-y: 0;
+        viewbox-width: 24;
+        viewbox-height: 24;
+        commands: "M 18 6 l -12 12 M 6 6 l 12 12";
+    }
+}
+
+export component IconCheck inherits Rectangle {
+    in property <color> icon_color: Theme.ink;
+    in property <length> icon_size: 16px;
+    width: icon_size;
+    height: icon_size;
+
+    Path {
+        width: 100%;
+        height: 100%;
+        stroke: root.icon_color;
+        stroke-width: 2px;
+        fill: transparent;
+        viewbox-x: 0;
+        viewbox-y: 0;
+        viewbox-width: 24;
+        viewbox-height: 24;
+        commands: "M 20 6 l -11 11 l -5 -5";
+    }
+}
+
