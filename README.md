@@ -25,7 +25,7 @@ Lyra is a fast, lightweight, and resource-efficient Spotify client designed to r
 
 ### Windows (via WinGet)
 ```powershell
-winget install cristianobleve.lyra
+winget install cristiano.lyra
 ```
 
 ### Build from Source

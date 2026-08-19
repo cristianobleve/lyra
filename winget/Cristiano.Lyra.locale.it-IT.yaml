@@ -1,9 +1,9 @@
 # yaml-language-server: $schema=https://aka.ms/winget-manifest.defaultLocale.1.12.0.schema.json
 
-PackageIdentifier: CristianoBleve.Lyra
+PackageIdentifier: Cristiano.Lyra
 PackageVersion: 0.1.0
 PackageLocale: it-IT
-Publisher: Cristiano Bleve
+Publisher: Cristiano
 PublisherUrl: https://cristianobleve.com
 PublisherSupportUrl: https://github.com/cristianobleve/lyra/issues
 Author: Cristiano Bleve
