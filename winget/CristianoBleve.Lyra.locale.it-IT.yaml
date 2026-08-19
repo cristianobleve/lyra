@@ -4,13 +4,13 @@ PackageIdentifier: CristianoBleve.Lyra
 PackageVersion: 0.1.0
 PackageLocale: it-IT
 Publisher: Cristiano Bleve
-PublisherUrl: https://github.com/spotialt/spotialt
-PublisherSupportUrl: https://github.com/spotialt/spotialt/issues
+PublisherUrl: https://github.com/cristianobleve/spotialt
+PublisherSupportUrl: https://github.com/cristianobleve/spotialt/issues
 Author: Cristiano Bleve
 PackageName: Lyra
-PackageUrl: https://github.com/spotialt/spotialt
+PackageUrl: https://github.com/cristianobleve/spotialt
 License: MIT OR Apache-2.0
-LicenseUrl: https://github.com/spotialt/spotialt/blob/main/LICENSE
+LicenseUrl: https://github.com/cristianobleve/spotialt/blob/main/LICENSE
 Copyright: Copyright (c) 2026 Cristiano Bleve
 ShortDescription: Client Spotify desktop nativo e ultra-leggero (~20 MB RAM) con WASAPI Bit-Perfect.
 Description: |
@@ -29,6 +29,6 @@ Tags:
   - slint
   - wasapi
   - audio
-ReleaseNotesUrl: https://github.com/spotialt/spotialt/releases/tag/v0.1.0
+ReleaseNotesUrl: https://github.com/cristianobleve/spotialt/releases/tag/v0.1.0
 ManifestType: defaultLocale
 ManifestVersion: 1.6.0

@@ -1,0 +1,39 @@
+name: Release Build & Publish
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-windows:
+    name: Build Windows x64 Binary
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build Release
+        run: cargo build --release --bin lyra
+
+      - name: Rename Artifact
+        run: |
+          mkdir -p dist
+          cp target/release/lyra.exe dist/lyra-windows-x64.exe
+          cd dist
+          certutil -hashfile lyra-windows-x64.exe SHA256 > sha256.txt
+
+      - name: Upload Windows Executable
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            dist/lyra-windows-x64.exe
+            dist/sha256.txt

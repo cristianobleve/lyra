@@ -8,7 +8,7 @@ Commands:
   - lyra
 Installers:
   - Architecture: x64
-    InstallerUrl: https://github.com/spotialt/spotialt/releases/download/v0.1.0/lyra-windows-x64.exe
-    InstallerSha256: 0000000000000000000000000000000000000000000000000000000000000000 # Inserisci l'hash SHA256 del binario .exe rilasciato
+    InstallerUrl: https://github.com/cristianobleve/spotialt/releases/download/v0.1.0/lyra-windows-x64.exe
+    InstallerSha256: D4A704DA2F53F2C59B70C230C7187372486EFFF9FF34127352BF755A2EE47C65
 ManifestType: installer
 ManifestVersion: 1.6.0
